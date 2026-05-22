@@ -1,0 +1,211 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html { scroll-behavior: smooth; }
+  body {
+    @apply font-sans bg-cream text-[#1C1C1C] antialiased;
+    overflow-x: hidden;
+  }
+  body.menu-open { overflow: hidden; }
+  ::selection { background: #D4A84B; color: #06101C; }
+
+  /* Custom scrollbar with royal tone */
+  ::-webkit-scrollbar { width: 10px; height: 10px; }
+  ::-webkit-scrollbar-track { background: #0E1B30; }
+  ::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, #A07830, #D4A84B);
+    border-radius: 6px;
+  }
+  ::-webkit-scrollbar-thumb:hover { background: #D4A84B; }
+}
+
+@layer components {
+  .btn-gold {
+    @apply inline-flex items-center gap-2 bg-gold text-navy font-semibold
+           px-7 py-3 rounded-lg text-sm transition-all duration-300
+           border-2 border-gold hover:bg-goldLt hover:border-goldLt
+           hover:-translate-y-0.5 hover:shadow-goldLg whitespace-nowrap relative overflow-hidden;
+  }
+  .btn-ghost {
+    @apply inline-flex items-center gap-2 border border-gold/30
+           text-white/85 px-7 py-3 rounded-lg text-sm
+           transition-all duration-300 hover:border-gold hover:text-gold
+           hover:bg-gold/5 whitespace-nowrap;
+  }
+  .btn-outline-navy {
+    @apply inline-flex items-center gap-2 bg-navy text-gold font-semibold
+           px-7 py-3 rounded-lg text-sm transition-all duration-300
+           border-2 border-navy hover:bg-navy2 hover:-translate-y-0.5 hover:shadow-royal;
+  }
+  .section-tag {
+    @apply inline-flex items-center gap-3 text-[0.72rem] font-semibold
+           text-goldDk uppercase tracking-[0.28em] mb-3;
+  }
+  .section-tag::before {
+    content: '';
+    @apply inline-block w-8 h-[1.5px] bg-gold flex-shrink-0;
+  }
+  .section-title {
+    @apply font-serif text-[clamp(1.9rem,4vw,3.4rem)] font-semibold
+           leading-[1.08] text-navy;
+  }
+  .section-sub {
+    @apply text-slate text-[clamp(0.9rem,1.5vw,1.02rem)] leading-[1.8] max-w-xl;
+  }
+  .glass-card {
+    @apply bg-white/[0.04] border border-white/10 backdrop-blur-md rounded-2xl;
+  }
+  /* Royal gold-foil text */
+  .gold-foil {
+    background: linear-gradient(90deg, #A07830 0%, #E8C879 25%, #D4A84B 50%, #F0DDB0 65%, #D4A84B 80%, #A07830 100%);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: shimmer 6s linear infinite;
+  }
+  /* Royal divider with gold diamond */
+  .royal-divider {
+    @apply flex items-center justify-center gap-3 my-4;
+  }
+  .royal-divider::before,
+  .royal-divider::after {
+    content: '';
+    @apply h-px w-12 bg-gradient-to-r from-transparent via-gold to-transparent;
+  }
+  .royal-divider .diamond {
+    @apply inline-block w-2 h-2 rotate-45 bg-gold;
+  }
+  /* Hairline gold border */
+  .hairline-gold {
+    box-shadow: inset 0 0 0 1px rgba(212,168,75,0.25);
+  }
+}
+
+/* Scroll reveal — JS-driven */
+.reveal {
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity 0.85s cubic-bezier(0.22, 1, 0.36, 1),
+              transform 0.85s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+.reveal-left {
+  opacity: 0;
+  transform: translateX(-32px);
+  transition: opacity 0.85s cubic-bezier(0.22, 1, 0.36, 1),
+              transform 0.85s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.reveal-left.visible {
+  opacity: 1;
+  transform: translateX(0);
+}
+.reveal-scale {
+  opacity: 0;
+  transform: scale(0.94);
+  transition: opacity 0.85s cubic-bezier(0.22, 1, 0.36, 1),
+              transform 0.85s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.reveal-scale.visible {
+  opacity: 1;
+  transform: scale(1);
+}
+.d1 { transition-delay: 0.08s; }
+.d2 { transition-delay: 0.18s; }
+.d3 { transition-delay: 0.28s; }
+.d4 { transition-delay: 0.38s; }
+.d5 { transition-delay: 0.48s; }
+.d6 { transition-delay: 0.58s; }
+
+/* Button shine sweep */
+.btn-gold::before {
+  content: '';
+  position: absolute; top: 0; left: -120%;
+  width: 55%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.28), transparent);
+  transform: skewX(-20deg);
+  pointer-events: none;
+}
+.btn-gold:hover::before { animation: btn-shine 0.7s ease forwards; }
+@keyframes btn-shine { to { left: 160%; } }
+
+/* Hide scrollbar on ticker track */
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { scrollbar-width: none; }
+
+/* Gold underline animation for nav items */
+.nav-link {
+  position: relative;
+}
+.nav-link::after {
+  content: '';
+  position: absolute;
+  left: 14px; right: 14px;
+  bottom: 4px;
+  height: 1.5px;
+  background: linear-gradient(90deg, transparent, #D4A84B, transparent);
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: transform 0.4s ease;
+}
+.nav-link:hover::after,
+.nav-link.active::after {
+  transform: scaleX(1);
+}
+
+/* Card hover royal lift */
+.royal-card {
+  position: relative;
+  overflow: hidden;
+}
+.royal-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 60%, rgba(212,168,75,0.08) 100%);
+  opacity: 0;
+  transition: opacity 0.5s ease;
+  pointer-events: none;
+}
+.royal-card:hover::after { opacity: 1; }
+
+/* Image hover ken-burns helper */
+.kenburns-on-hover img {
+  transition: transform 1.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.kenburns-on-hover:hover img {
+  transform: scale(1.08);
+}
+
+/* Marquee for blog category bar */
+.cat-pill {
+  @apply inline-flex items-center gap-2 px-5 py-2.5 rounded-full
+         text-[0.78rem] font-semibold tracking-[0.14em] uppercase
+         border transition-all whitespace-nowrap cursor-pointer;
+}
+
+/* Decorative pattern overlays */
+.pattern-crown {
+  background-image:
+    url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M40 14 L46 24 L58 24 L48 32 L52 44 L40 38 L28 44 L32 32 L22 24 L34 24 Z' fill='none' stroke='%23D4A84B' stroke-width='0.6' opacity='0.10'/%3E%3C/svg%3E");
+}
+
+/* Property card price ribbon */
+.price-ribbon {
+  background: linear-gradient(135deg, #D4A84B 0%, #A07830 100%);
+  box-shadow: 0 6px 16px rgba(212,168,75,0.35);
+}
+
+/* Dropdown animation */
+.dropdown-enter {
+  animation: slideDown 0.25s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
