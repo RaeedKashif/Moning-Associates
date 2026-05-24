@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
+import { supabase } from '../lib/supabase';
 
-const categories = [
+const ALL_CATEGORIES = [
   'All',
   'Market Insights',
   'Buyer Guide',
@@ -11,95 +12,31 @@ const categories = [
   'REO & Off-Market',
 ];
 
-const posts = [
-  {
-    cat: 'Market Insights',
-    title: 'The 2026 DFW Market: What Buyers Should Expect This Spring',
-    excerpt: "Inventory is loosening, rates are stabilizing, and DFW is back to being a buyer's conversation. Here's the reality on the ground.",
-    date: 'May 18, 2026',
-    read: '6 min read',
-    image: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1200&q=80',
-    author: 'Steven Moning',
-  },
-  {
-    cat: 'Luxury Living',
-    title: 'Inside Highland Park: Why Old Money Still Anchors Dallas Luxury',
-    excerpt: "Highland Park's pricing has held through every cycle for a reason. We unpack what makes this enclave bulletproof.",
-    date: 'May 11, 2026',
-    read: '8 min read',
-    image: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80',
-    author: 'Moning & Associates',
-  },
-  {
-    cat: 'Investment',
-    title: 'Cash-Flow vs Appreciation: Picking Your DFW Investment Strategy',
-    excerpt: 'Two different paths, two different submarkets, two different exit strategies. Which is right for your portfolio?',
-    date: 'May 04, 2026',
-    read: '7 min read',
-    image: 'https://images.unsplash.com/photo-1582407947304-fd86f028f716?auto=format&fit=crop&w=1200&q=80',
-    author: 'Steven Moning',
-  },
-  {
-    cat: 'Buyer Guide',
-    title: 'First-Time Buyer in Dallas? Read This Before You Sign Anything',
-    excerpt: "A no-nonsense walk-through of inspection, escrow, and the three negotiation points most agents won't tell you about.",
-    date: 'Apr 26, 2026',
-    read: '5 min read',
-    image: 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=1200&q=80',
-    author: 'Moning & Associates',
-  },
-  {
-    cat: 'REO & Off-Market',
-    title: 'How We Source Off-Market Deals — and How You Can Get Access',
-    excerpt: "The DFW off-market pipeline is real, but it's relationship-driven. Here's how to plug in without burning your reputation.",
-    date: 'Apr 19, 2026',
-    read: '9 min read',
-    image: 'https://images.unsplash.com/photo-1568605114967-8130f3a36994?auto=format&fit=crop&w=1200&q=80',
-    author: 'Steven Moning',
-  },
-  {
-    cat: 'Seller Tips',
-    title: '7 Pre-Listing Moves That Quietly Add $50K to Your Sale Price',
-    excerpt: 'No major renovation needed. These are the small, high-leverage moves that change the perception of your home in 48 hours.',
-    date: 'Apr 12, 2026',
-    read: '6 min read',
-    image: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80',
-    author: 'Moning & Associates',
-  },
-  {
-    cat: 'DFW Lifestyle',
-    title: 'Where to Live in DFW in 2026 — A Neighborhood-by-Neighborhood Take',
-    excerpt: "We break down Frisco vs Plano vs Southlake vs Highland Park for what they actually feel like to live in day-to-day.",
-    date: 'Apr 05, 2026',
-    read: '10 min read',
-    image: 'https://images.unsplash.com/photo-1496347315367-04a6ba84b1ba?auto=format&fit=crop&w=1200&q=80',
-    author: 'Moning & Associates',
-  },
-  {
-    cat: 'Investment',
-    title: 'BRRRR in Dallas: Does the Strategy Still Work in 2026?',
-    excerpt: 'Buy-Rehab-Rent-Refi-Repeat had a golden run. Here is what is left of that play and which DFW submarkets still support it.',
-    date: 'Mar 28, 2026',
-    read: '8 min read',
-    image: 'https://images.unsplash.com/photo-1565182999561-18d7dc61c393?auto=format&fit=crop&w=1200&q=80',
-    author: 'Steven Moning',
-  },
-  {
-    cat: 'Market Insights',
-    title: 'Mortgage Rates Mid-2026: The Outlook From a DFW Lender Roundtable',
-    excerpt: "We sat down with three DFW lenders. Here's the consensus on rates, programs, and what's actually getting buyers to close.",
-    date: 'Mar 21, 2026',
-    read: '7 min read',
-    image: 'https://images.unsplash.com/photo-1554224155-6726b3ff858f?auto=format&fit=crop&w=1200&q=80',
-    author: 'Steven Moning',
-  },
-];
-
 export default function Blogs({ limit = null, showHeader = true }) {
+  const [posts, setPosts]   = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError]   = useState(null);
   const [active, setActive] = useState('All');
   const [canScrollLeft, setCanScrollLeft]   = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(false);
   const scrollRef = useRef(null);
+
+  useEffect(() => {
+    async function fetchPosts() {
+      setLoading(true);
+      const { data, error } = await supabase
+        .from('blog_posts')
+        .select('*')
+        .order('published_at', { ascending: false });
+      if (error) {
+        setError(error.message);
+      } else {
+        setPosts(data ?? []);
+      }
+      setLoading(false);
+    }
+    fetchPosts();
+  }, []);
 
   const updateScrollState = () => {
     const el = scrollRef.current;
@@ -107,6 +44,60 @@ export default function Blogs({ limit = null, showHeader = true }) {
     setCanScrollLeft(el.scrollLeft > 4);
     setCanScrollRight(el.scrollLeft < el.scrollWidth - el.clientWidth - 4);
   };
+
+  // Mouse wheel: map vertical wheel to horizontal scroll on the pill bar
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+    const onWheel = (e) => {
+      if (Math.abs(e.deltaY) <= Math.abs(e.deltaX)) return;
+      if (el.scrollWidth <= el.clientWidth) return;
+      e.preventDefault();
+      el.scrollBy({ left: e.deltaY, behavior: 'auto' });
+    };
+    el.addEventListener('wheel', onWheel, { passive: false });
+    return () => el.removeEventListener('wheel', onWheel);
+  }, []);
+
+  // Click + drag to scroll (desktop trackpad/mouse users)
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+    let isDown = false, startX = 0, startScroll = 0, moved = false;
+
+    const onDown = (e) => {
+      if (e.target.closest('button')) return; // let pill clicks work normally
+      isDown = true; moved = false;
+      startX = e.pageX - el.offsetLeft;
+      startScroll = el.scrollLeft;
+      el.style.cursor = 'grabbing';
+    };
+    const onMove = (e) => {
+      if (!isDown) return;
+      const x = e.pageX - el.offsetLeft;
+      const walk = x - startX;
+      if (Math.abs(walk) > 4) moved = true;
+      el.scrollLeft = startScroll - walk;
+    };
+    const onUp = () => {
+      isDown = false;
+      el.style.cursor = '';
+      if (moved) {
+        // swallow the click that follows the drag
+        const swallow = (ev) => { ev.stopPropagation(); ev.preventDefault(); };
+        el.addEventListener('click', swallow, { capture: true, once: true });
+      }
+    };
+
+    el.addEventListener('mousedown', onDown);
+    window.addEventListener('mousemove', onMove);
+    window.addEventListener('mouseup', onUp);
+    return () => {
+      el.removeEventListener('mousedown', onDown);
+      window.removeEventListener('mousemove', onMove);
+      window.removeEventListener('mouseup', onUp);
+    };
+  }, []);
 
   useEffect(() => {
     updateScrollState();
@@ -116,14 +107,28 @@ export default function Blogs({ limit = null, showHeader = true }) {
     const ro = new ResizeObserver(updateScrollState);
     ro.observe(el);
     return () => { el.removeEventListener('scroll', updateScrollState); ro.disconnect(); };
-  }, []);
+  }, [posts]);
+
+  // Auto-scroll the active pill into view when category changes
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+    const activeBtn = el.querySelector('[data-active="true"]');
+    activeBtn?.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+  }, [active]);
 
   const scroll = (dir) => {
-    scrollRef.current?.scrollBy({ left: dir * 160, behavior: 'smooth' });
+    const el = scrollRef.current;
+    if (!el) return;
+    const step = Math.max(200, el.clientWidth * 0.7);
+    el.scrollBy({ left: dir * step, behavior: 'smooth' });
   };
 
   let visible = active === 'All' ? posts : posts.filter(p => p.cat === active);
   if (limit) visible = visible.slice(0, limit);
+
+  const formatDate = (iso) =>
+    new Date(iso).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
 
   return (
     <section id="blogs" className="bg-cream py-16 md:py-24 px-5 md:px-[6%] relative overflow-hidden">
@@ -154,14 +159,15 @@ export default function Blogs({ limit = null, showHeader = true }) {
           <button
             onClick={() => scroll(-1)}
             aria-label="Scroll categories left"
-            className={`absolute left-2 top-1/2 -translate-y-1/2 z-20
-                        w-7 h-7 rounded-full bg-gold/20 hover:bg-gold
-                        text-gold hover:text-navy border border-gold/40
+            className={`absolute left-1.5 top-1/2 -translate-y-1/2 z-20
+                        w-9 h-9 rounded-full bg-navy hover:bg-gold
+                        text-gold hover:text-navy border border-gold/60 shadow-lg
                         flex items-center justify-center transition-all duration-200
+                        hover:scale-110
                         ${canScrollLeft ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
           >
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"
-                 strokeLinecap="round" strokeLinejoin="round" className="w-3.5 h-3.5">
+                 strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
               <polyline points="15 18 9 12 15 6"/>
             </svg>
           </button>
@@ -170,7 +176,8 @@ export default function Blogs({ limit = null, showHeader = true }) {
           <div
             ref={scrollRef}
             className="flex items-center gap-2 md:gap-3 overflow-x-auto no-scrollbar
-                       px-3 py-2.5 md:px-6 md:py-4 scroll-smooth"
+                       px-3 py-2.5 md:px-6 md:py-4 scroll-smooth cursor-grab select-none"
+            style={{ scrollbarWidth: 'none' }}
           >
             <div className="items-center gap-2 pr-3 mr-2 border-r border-gold/30
                             shrink-0 hidden md:flex">
@@ -179,11 +186,12 @@ export default function Blogs({ limit = null, showHeader = true }) {
                 Categories
               </span>
             </div>
-            {categories.map(c => {
+            {ALL_CATEGORIES.map(c => {
               const count = c === 'All' ? posts.length : posts.filter(p => p.cat === c).length;
               return (
                 <button
                   key={c}
+                  data-active={active === c}
                   onClick={() => setActive(c)}
                   className={`shrink-0 inline-flex items-center gap-1.5
                               px-3 md:px-4 py-1.5 md:py-2 rounded-full
@@ -211,83 +219,119 @@ export default function Blogs({ limit = null, showHeader = true }) {
           <button
             onClick={() => scroll(1)}
             aria-label="Scroll categories right"
-            className={`absolute right-2 top-1/2 -translate-y-1/2 z-20
-                        w-7 h-7 rounded-full bg-gold/20 hover:bg-gold
-                        text-gold hover:text-navy border border-gold/40
+            className={`absolute right-1.5 top-1/2 -translate-y-1/2 z-20
+                        w-9 h-9 rounded-full bg-navy hover:bg-gold
+                        text-gold hover:text-navy border border-gold/60 shadow-lg
                         flex items-center justify-center transition-all duration-200
+                        hover:scale-110
                         ${canScrollRight ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
           >
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"
-                 strokeLinecap="round" strokeLinejoin="round" className="w-3.5 h-3.5">
+                 strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
               <polyline points="9 18 15 12 9 6"/>
             </svg>
           </button>
         </div>
       </div>
 
-      <div className="relative text-slate text-[0.78rem] mb-6">
-        Showing <span className="text-goldDk font-semibold">{visible.length}</span> of{' '}
-        <span className="text-goldDk font-semibold">{posts.length}</span> articles
-        {active !== 'All' && (
-          <span> in <span className="text-goldDk font-semibold">{active}</span></span>
-        )}
-      </div>
+      {/* Status line */}
+      {!loading && !error && (
+        <div className="relative text-slate text-[0.78rem] mb-6">
+          Showing <span className="text-goldDk font-semibold">{visible.length}</span> of{' '}
+          <span className="text-goldDk font-semibold">{posts.length}</span> articles
+          {active !== 'All' && (
+            <span> in <span className="text-goldDk font-semibold">{active}</span></span>
+          )}
+        </div>
+      )}
 
-      <div key={active} className="relative grid md:grid-cols-2 lg:grid-cols-3 gap-5 md:gap-6">
-        {visible.map((p, i) => (
-          <article
-            key={p.title}
-            style={{ animationDelay: `${(i % 3) * 0.08}s` }}
-            className={`animate-fadeUp group
-                        bg-white rounded-2xl border border-black/[0.06] overflow-hidden
-                        transition-all duration-500
-                        hover:-translate-y-2 hover:shadow-royal hover:border-gold/40`}
-          >
-            <div className="relative aspect-[16/10] overflow-hidden kenburns-on-hover">
-              <img
-                src={p.image}
-                alt={p.title}
-                loading="lazy"
-                className="w-full h-full object-cover"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-navy/60 via-transparent to-transparent" />
-              <span className="absolute top-4 left-4 bg-gold text-navy text-[0.7rem]
-                               font-semibold tracking-[0.16em] uppercase
-                               px-3 py-1.5 rounded-md shadow-gold">
-                {p.cat}
-              </span>
-            </div>
-            <div className="p-6 md:p-7">
-              <div className="flex items-center gap-2 text-muted text-[0.72rem]
-                              tracking-[0.12em] uppercase mb-3">
-                <span>{p.date}</span>
-                <span className="inline-block w-1 h-1 rounded-full bg-gold" />
-                <span>{p.read}</span>
+      {/* Loading skeleton */}
+      {loading && (
+        <div className="relative grid md:grid-cols-2 lg:grid-cols-3 gap-5 md:gap-6">
+          {[...Array(6)].map((_, i) => (
+            <div key={i} className="bg-white rounded-2xl border border-black/[0.06] overflow-hidden animate-pulse">
+              <div className="aspect-[16/10] bg-slate/20" />
+              <div className="p-6 space-y-3">
+                <div className="h-3 w-24 bg-slate/20 rounded" />
+                <div className="h-5 w-full bg-slate/20 rounded" />
+                <div className="h-5 w-3/4 bg-slate/20 rounded" />
+                <div className="h-3 w-full bg-slate/10 rounded mt-2" />
+                <div className="h-3 w-5/6 bg-slate/10 rounded" />
               </div>
-              <h3 className="font-serif text-navy text-[1.25rem] font-semibold leading-tight
-                             group-hover:text-goldDk transition-colors">
-                {p.title}
-              </h3>
-              <p className="text-slate text-[0.9rem] leading-[1.75] mt-3 line-clamp-3">
-                {p.excerpt}
-              </p>
-              <div className="flex items-center justify-between mt-5 pt-5 border-t border-black/[0.06]">
-                <div className="flex items-center gap-2">
-                  <div className="w-7 h-7 rounded-full bg-gradient-to-br from-gold to-goldDk
-                                  grid place-items-center text-navy font-bold text-[0.7rem]">
-                    {p.author.split(' ').map(w => w[0]).join('').slice(0, 2)}
-                  </div>
-                  <span className="text-muted text-[0.78rem]">{p.author}</span>
-                </div>
-                <span className="text-goldDk text-[0.78rem] font-semibold tracking-wider uppercase
-                                 group-hover:translate-x-1 transition-transform">
-                  Read &rarr;
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Error state */}
+      {error && (
+        <div className="text-center py-16 text-white/60">
+          <p className="text-lg mb-2">Could not load posts.</p>
+          <p className="text-sm text-white/40">{error}</p>
+        </div>
+      )}
+
+      {/* Posts grid */}
+      {!loading && !error && (
+        <div key={active} className="relative grid md:grid-cols-2 lg:grid-cols-3 gap-5 md:gap-6">
+          {visible.length === 0 && (
+            <p className="col-span-3 text-center text-slate py-12">No posts in this category yet.</p>
+          )}
+          {visible.map((p, i) => (
+            <article
+              key={p.id ?? p.title}
+              style={{ animationDelay: `${(i % 3) * 0.08}s` }}
+              className="animate-fadeUp group
+                         bg-white rounded-2xl border border-black/[0.06] overflow-hidden
+                         transition-all duration-500
+                         hover:-translate-y-2 hover:shadow-royal hover:border-gold/40"
+            >
+              <div className="relative aspect-[16/10] overflow-hidden kenburns-on-hover">
+                <img
+                  src={p.image}
+                  alt={p.title}
+                  loading="lazy"
+                  className="w-full h-full object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-navy/60 via-transparent to-transparent" />
+                <span className="absolute top-4 left-4 bg-gold text-navy text-[0.7rem]
+                                 font-semibold tracking-[0.16em] uppercase
+                                 px-3 py-1.5 rounded-md shadow-gold">
+                  {p.cat}
                 </span>
               </div>
-            </div>
-          </article>
-        ))}
-      </div>
+              <div className="p-6 md:p-7">
+                <div className="flex items-center gap-2 text-muted text-[0.72rem]
+                                tracking-[0.12em] uppercase mb-3">
+                  <span>{p.published_at ? formatDate(p.published_at) : p.date}</span>
+                  <span className="inline-block w-1 h-1 rounded-full bg-gold" />
+                  <span>{p.read}</span>
+                </div>
+                <h3 className="font-serif text-navy text-[1.25rem] font-semibold leading-tight
+                               group-hover:text-goldDk transition-colors">
+                  {p.title}
+                </h3>
+                <p className="text-slate text-[0.9rem] leading-[1.75] mt-3 line-clamp-3">
+                  {p.excerpt}
+                </p>
+                <div className="flex items-center justify-between mt-5 pt-5 border-t border-black/[0.06]">
+                  <div className="flex items-center gap-2">
+                    <div className="w-7 h-7 rounded-full bg-gradient-to-br from-gold to-goldDk
+                                    grid place-items-center text-navy font-bold text-[0.7rem]">
+                      {(p.author ?? 'MA').split(' ').map(w => w[0]).join('').slice(0, 2)}
+                    </div>
+                    <span className="text-muted text-[0.78rem]">{p.author}</span>
+                  </div>
+                  <span className="text-goldDk text-[0.78rem] font-semibold tracking-wider uppercase
+                                   group-hover:translate-x-1 transition-transform">
+                    Read &rarr;
+                  </span>
+                </div>
+              </div>
+            </article>
+          ))}
+        </div>
+      )}
     </section>
   );
 }
