@@ -4,11 +4,11 @@ import { supabase } from '../lib/supabase';
 const formatDate = (iso) =>
   new Date(iso).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
 
-// Lightweight markdown-ish renderer.
-// Supports: ## H2, ### H3, > blockquote, - list, **bold**, plain paragraphs.
+// Lightweight markdown-ish renderer — line-based so a heading followed
+// directly by a list (no blank line between) still renders correctly.
+// Supports: ## H2, ### H3, > blockquote, - / * list, **bold**, paragraphs.
 function renderContent(text) {
   if (!text) return null;
-  const blocks = text.split(/\n\s*\n/);
 
   const inline = (s) => {
     const parts = s.split(/(\*\*[^*]+\*\*)/g);
@@ -19,55 +19,95 @@ function renderContent(text) {
     );
   };
 
-  return blocks.map((block, i) => {
-    const t = block.trim();
-    if (!t) return null;
+  const lines = text.replace(/\r\n/g, '\n').split('\n');
+  const out = [];
+  let para = [];
+  let list = [];
+  let isFirst = true;
+
+  const flushPara = () => {
+    if (!para.length) return;
+    out.push(
+      <p key={`p-${out.length}`}
+         className="text-slate leading-[1.95] mb-6 text-[1.02rem] md:text-[1.06rem]">
+        {inline(para.join(' '))}
+      </p>
+    );
+    para = [];
+  };
+  const flushList = () => {
+    if (!list.length) return;
+    const items = list.slice();
+    out.push(
+      <ul key={`ul-${out.length}`} className="my-6 space-y-3">
+        {items.map((it, j) => (
+          <li key={j} className="flex gap-3 text-slate leading-[1.9] text-[1.02rem]">
+            <span className="mt-[0.65rem] inline-block w-1.5 h-1.5 rotate-45 bg-gold shrink-0" />
+            <span>{inline(it)}</span>
+          </li>
+        ))}
+      </ul>
+    );
+    list = [];
+  };
+  const flushAll = () => { flushPara(); flushList(); };
+
+  for (const raw of lines) {
+    const t = raw.trim();
+
+    if (!t) { flushAll(); continue; }
 
     if (t.startsWith('## ')) {
-      return (
-        <h2 key={i} className="font-serif text-navy text-2xl md:text-[1.85rem] font-semibold
-                               mt-14 mb-5 leading-tight">
+      flushAll();
+      out.push(
+        <h2 key={`h2-${out.length}`}
+            className={`font-serif text-navy text-2xl md:text-[1.85rem] font-semibold
+                        mb-4 leading-tight ${isFirst ? 'mt-0' : 'mt-12'}`}>
           {inline(t.slice(3))}
         </h2>
       );
+      isFirst = false;
+      continue;
     }
     if (t.startsWith('### ')) {
-      return (
-        <h3 key={i} className="font-serif text-navy text-xl md:text-[1.4rem] font-semibold
-                               mt-10 mb-3 leading-tight">
+      flushAll();
+      out.push(
+        <h3 key={`h3-${out.length}`}
+            className={`font-serif text-navy text-xl md:text-[1.4rem] font-semibold
+                        mb-3 leading-tight ${isFirst ? 'mt-0' : 'mt-9'}`}>
           {inline(t.slice(4))}
         </h3>
       );
+      isFirst = false;
+      continue;
     }
     if (t.startsWith('> ')) {
-      return (
-        <blockquote key={i} className="my-9 pl-6 pr-5 py-5 border-l-4 border-gold
-                                       bg-gold/[0.07] rounded-r-xl">
+      flushAll();
+      out.push(
+        <blockquote key={`bq-${out.length}`}
+                    className="my-8 pl-6 pr-5 py-5 border-l-4 border-gold
+                               bg-gold/[0.07] rounded-r-xl">
           <p className="font-serif italic text-navy text-[1.1rem] md:text-[1.2rem] leading-[1.85]">
             {inline(t.slice(2))}
           </p>
         </blockquote>
       );
+      isFirst = false;
+      continue;
     }
     if (t.startsWith('- ') || t.startsWith('* ')) {
-      const items = t.split('\n').map(l => l.replace(/^[-*]\s*/, ''));
-      return (
-        <ul key={i} className="my-6 space-y-3">
-          {items.map((it, j) => (
-            <li key={j} className="flex gap-3 text-slate leading-[1.9] text-[1.02rem]">
-              <span className="mt-[0.65rem] inline-block w-1.5 h-1.5 rotate-45 bg-gold shrink-0" />
-              <span>{inline(it)}</span>
-            </li>
-          ))}
-        </ul>
-      );
+      flushPara();
+      list.push(t.slice(2));
+      isFirst = false;
+      continue;
     }
-    return (
-      <p key={i} className="text-slate leading-[1.95] mb-6 text-[1.02rem] md:text-[1.06rem]">
-        {inline(t)}
-      </p>
-    );
-  });
+    flushList();
+    para.push(t);
+    isFirst = false;
+  }
+  flushAll();
+
+  return out;
 }
 
 export default function BlogPostPage({ slug }) {
@@ -207,11 +247,11 @@ export default function BlogPostPage({ slug }) {
         </div>
       </section>
 
-      {/* Cover image overlapping hero */}
+      {/* Cover image — sits cleanly on cream, no overlap weirdness */}
       {post.image && (
-        <div className="px-5 md:px-[6%] -mt-10 md:-mt-16 relative z-10">
+        <div className="bg-cream px-5 md:px-[6%] pt-10 md:pt-14">
           <div className="max-w-4xl mx-auto rounded-2xl overflow-hidden
-                          border border-gold/30 shadow-royal bg-navy">
+                          border border-gold/25 shadow-royal">
             <img
               src={post.image}
               alt={post.title}
@@ -222,7 +262,7 @@ export default function BlogPostPage({ slug }) {
       )}
 
       {/* Body */}
-      <article className="px-5 md:px-[6%] py-14 md:py-20 relative">
+      <article className="px-5 md:px-[6%] pt-10 md:pt-14 pb-16 md:pb-20 relative">
         <div className="pointer-events-none absolute inset-0 pattern-crown opacity-20" />
         <div className="relative max-w-3xl mx-auto">
           {renderContent(post.content) || (
@@ -231,7 +271,7 @@ export default function BlogPostPage({ slug }) {
             </p>
           )}
 
-          <div className="royal-divider mt-16 mb-12">
+          <div className="royal-divider mt-12 mb-10">
             <span className="h-px w-16 bg-gradient-to-r from-transparent via-gold to-transparent" />
             <span className="inline-block w-2 h-2 rotate-45 bg-gold" />
             <span className="h-px w-16 bg-gradient-to-r from-transparent via-gold to-transparent" />
