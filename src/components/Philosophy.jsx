@@ -2,17 +2,17 @@ const pillars = [
   {
     num: '01',
     title: 'Honor Over Ego',
-    body: "Every recommendation is genuinely what's best for you — not what's easiest for us. Your interest comes first, full stop.",
+    body: "Every recommendation we make is what's genuinely best for you — not what's easiest for us. Your interests come first. Always.",
   },
   {
     num: '02',
     title: 'Conviction Over Convenience',
-    body: "We'll tell you when a deal isn't right, when the price is too high, or when to walk away. The truth now beats regret later.",
+    body: "We'll tell you when a deal isn't right, when a price is too high, or when it's time to walk away. The hard truth now beats the quiet regret later.",
   },
   {
     num: '03',
     title: 'Legacy Over Limelight',
-    body: "We're not chasing awards. The only metric that matters is whether our client ended up better off. That's it.",
+    body: "We're not in this for the awards or the headlines. The only thing that really matters to us is whether you ended up better off. That's the scorecard.",
   },
 ];
 
@@ -33,8 +33,8 @@ export default function Philosophy() {
           </span>
           <blockquote className="font-serif text-white font-semibold leading-[1.2]
                                  text-[clamp(1.7rem,3.2vw,2.7rem)]">
-            "We don't just close deals — we help people figure out
-            where they actually <em className="italic text-gold">belong</em> in DFW."
+            "We're not just here to close deals — we're here to help people figure
+            out where they actually <em className="italic text-gold">belong</em> in DFW."
           </blockquote>
           <div className="flex items-center gap-4 mt-8">
             <span className="w-7 h-px bg-gold" />

@@ -41,8 +41,9 @@ export default function Contact() {
           today.
         </h2>
         <p className="text-white/55 text-[0.96rem] leading-[1.8] max-w-md mb-8">
-          Buying, selling, or investing — let's have a real conversation about
-          what you're trying to do. No pressure, no pitch. Just useful answers.
+          Buying, selling, or investing — let's just have a real conversation
+          about what you're trying to do. No pressure, no scripted pitch. Just
+          honest, useful answers.
         </p>
 
         <ul className="flex flex-col gap-4">
@@ -75,7 +76,7 @@ export default function Contact() {
             <div className="text-center py-12">
               <div className="w-14 h-14 mx-auto rounded-full bg-gold grid place-items-center text-navy
                               text-2xl font-bold mb-4">✓</div>
-              <h3 className="font-serif text-white text-2xl mb-2">Thanks — message received.</h3>
+              <h3 className="font-serif text-white text-2xl mb-2">Thanks — we got it.</h3>
               <p className="text-white/55">Steven will be in touch within one business day.</p>
             </div>
           ) : (
@@ -107,7 +108,7 @@ export default function Contact() {
                                   text-white/45 mb-2">Message</label>
                 <textarea
                   rows={4}
-                  placeholder="Tell us a little about what you're trying to do..."
+                  placeholder="Tell us a bit about what you're hoping to do..."
                   className="w-full bg-white/[0.06] border border-white/10 rounded-lg
                              px-4 py-3 text-white text-[0.92rem] resize-none
                              focus:border-gold focus:outline-none transition

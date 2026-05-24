@@ -48,10 +48,10 @@ export default function Hero() {
 
         <p className="relative mt-2 text-white/70 max-w-xl text-[clamp(0.95rem,1.4vw,1.05rem)]
                       leading-[1.85] animate-fadeUp [animation-delay:0.2s]">
-          Steven Moning has spent nearly two decades walking families, first-time buyers,
-          and seasoned investors through the DFW market — through good markets and bad.
-          You'll get straight answers, the right comps, and an agent who actually
-          picks up the phone.
+          For almost twenty years, Steven Moning has been guiding families, first-time
+          buyers, and seasoned investors through every twist of the DFW market — the good
+          years and the rough ones. What you get is plain English, honest comps, and an
+          agent who actually answers his phone when you call.
         </p>
 
         <div className="relative mt-10 flex flex-wrap items-center gap-4
@@ -87,6 +87,31 @@ export default function Hero() {
               </div>
             </div>
           ))}
+        </div>
+
+        {/* Brokered-by eXp mark — blends with dark theme */}
+        <div className="relative mt-10 sm:mt-12 flex items-center gap-4
+                        animate-fadeUp [animation-delay:0.5s]">
+          <img
+            src="/assets/exp3.png"
+            alt="eXp Realty"
+            className="h-16 w-16 sm:h-20 sm:w-20 object-contain rounded-xl
+                       ring-1 ring-gold/35 hover:ring-gold/70
+                       transition-all hover:-translate-y-0.5"
+          />
+          <div className="flex flex-col gap-0.5">
+            <span className="text-[0.6rem] sm:text-[0.65rem] tracking-[0.28em]
+                             uppercase text-gold/80">
+              Proudly Brokered by
+            </span>
+            <span className="font-serif text-white text-[1.05rem] sm:text-[1.2rem]
+                             font-semibold leading-tight">
+              eXp Realty
+            </span>
+            <span className="text-white/45 text-[0.72rem] sm:text-[0.78rem] leading-tight">
+              The world's #1 independent brokerage.
+            </span>
+          </div>
         </div>
       </div>
 

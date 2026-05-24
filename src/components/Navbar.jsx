@@ -168,6 +168,22 @@ export default function Navbar({ currentRoute = 'home' }) {
               </li>
             );
           })}
+          <li className="ml-2 pl-3 border-l border-gold/25">
+            <div className="inline-flex items-center gap-2"
+                 title="Brokered by eXp Realty">
+              <span className="text-[0.55rem] tracking-[0.22em] uppercase
+                               text-gold/60 leading-tight text-right">
+                Brokered<br/>by
+              </span>
+              <img
+                src="/assets/exp3.png"
+                alt="eXp Realty"
+                className="h-9 w-9 object-contain rounded-md
+                           ring-1 ring-gold/30 hover:ring-gold/60
+                           transition-all"
+              />
+            </div>
+          </li>
           <li>
             <a
               href="#contact"
@@ -274,6 +290,19 @@ export default function Navbar({ currentRoute = 'home' }) {
                className="block text-white py-1.5 text-sm">
               steven.moning@exprealty.com
             </a>
+          </div>
+
+          {/* Mobile eXp Realty partnership badge */}
+          <div className="mt-6 pt-6 border-t border-gold/20 flex items-center gap-4">
+            <span className="text-gold/80 text-[0.65rem] tracking-[0.22em] uppercase">
+              Brokered by
+            </span>
+            <img
+              src="/assets/exp3.png"
+              alt="eXp Realty"
+              className="h-12 w-12 object-contain rounded-md
+                         ring-1 ring-gold/40"
+            />
           </div>
         </div>
       </div>

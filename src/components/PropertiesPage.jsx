@@ -25,14 +25,29 @@ export default function PropertiesPage({ initialFilter = 'all' }) {
           </h1>
           <p className="text-white/70 text-[clamp(0.95rem,1.4vw,1.1rem)] leading-[1.85] max-w-2xl mx-auto mt-6
                         animate-fadeUp [animation-delay:0.2s]">
-            From off-market estates to active luxury listings and raw DFW land —
-            every property here is one we'd personally take a client to walk.
+            From quiet off-market estates to active luxury listings and a few choice
+            stretches of DFW land — every property here is one we'd walk through with
+            a client ourselves.
           </p>
 
           <div className="royal-divider mt-8 animate-fadeUp [animation-delay:0.3s]">
             <span className="h-px w-16 bg-gradient-to-r from-transparent via-gold to-transparent" />
             <span className="inline-block w-2 h-2 rotate-45 bg-gold" />
             <span className="h-px w-16 bg-gradient-to-r from-transparent via-gold to-transparent" />
+          </div>
+
+          {/* Brokered-by eXp mark — blends with dark theme */}
+          <div className="mt-8 inline-flex items-center gap-3
+                          animate-fadeUp [animation-delay:0.4s]">
+            <span className="text-[0.62rem] tracking-[0.26em] uppercase text-gold/80">
+              Brokered by
+            </span>
+            <img
+              src="/assets/exp3.png"
+              alt="eXp Realty"
+              className="h-11 w-11 object-contain rounded-md
+                         ring-1 ring-gold/40 hover:ring-gold/70 transition-all"
+            />
           </div>
         </div>
       </section>
@@ -43,11 +58,11 @@ export default function PropertiesPage({ initialFilter = 'all' }) {
       <section className="bg-navy2 px-5 md:px-[6%] py-16 border-t border-gold/15">
         <div className="max-w-4xl mx-auto text-center">
           <h3 className="font-serif text-white text-[clamp(1.5rem,3vw,2.4rem)] font-semibold mb-4">
-            Looking for something <span className="italic gold-foil">specific?</span>
+            Hunting for something <span className="italic gold-foil">specific?</span>
           </h3>
           <p className="text-white/65 leading-[1.8] mb-8 max-w-2xl mx-auto">
-            Many of our best deals never hit the MLS. Tell us what you're hunting
-            for and we'll send a private shortlist.
+            A lot of our best deals never make it to the MLS. Tell us what you're
+            looking for and we'll quietly put together a private shortlist for you.
           </p>
           <a href="#/" onClick={(e) => { e.preventDefault(); window.location.hash = ''; setTimeout(() => document.getElementById('contact')?.scrollIntoView({behavior: 'smooth'}), 80); }}
              className="btn-gold inline-flex">

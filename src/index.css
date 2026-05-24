@@ -209,3 +209,35 @@
   from { opacity: 0; transform: translateY(-6px); }
   to   { opacity: 1; transform: translateY(0); }
 }
+
+/* Focus-visible polish — keyboard users get a clean gold ring instead of the
+   default jagged blue outline; mouse clicks stay clean. */
+*:focus-visible {
+  outline: 2px solid #D4A84B;
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+button:focus-visible,
+a:focus-visible {
+  outline-offset: 4px;
+}
+
+/* Smooth image fade-in on load so listings don't pop in harshly */
+img {
+  transition: opacity 0.4s ease;
+}
+
+/* Subtle ring around contact form inputs on focus */
+.glass-card input:focus,
+.glass-card textarea:focus,
+.glass-card select:focus {
+  box-shadow: 0 0 0 3px rgba(212, 168, 75, 0.15);
+}
+
+/* Slightly tighter typographic rhythm in long-form copy */
+p {
+  text-wrap: pretty;
+}
+h1, h2, h3, h4 {
+  text-wrap: balance;
+}

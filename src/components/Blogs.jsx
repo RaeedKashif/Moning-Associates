@@ -3,13 +3,17 @@ import { supabase } from '../lib/supabase';
 
 const ALL_CATEGORIES = [
   'All',
-  'Market Insights',
-  'Buyer Guide',
-  'Seller Tips',
-  'Investment',
-  'Luxury Living',
-  'DFW Lifestyle',
-  'REO & Off-Market',
+  'Alumni',
+  'Baby Boomers',
+  "Dallas Cowboy's",
+  'Health & Fitness',
+  'Lands',
+  'Local Events',
+  'News',
+  'Off Market',
+  'Property',
+  'Sports',
+  'Uncategorized',
 ];
 
 export default function Blogs({ limit = null, showHeader = true }) {
@@ -277,59 +281,61 @@ export default function Blogs({ limit = null, showHeader = true }) {
           {visible.length === 0 && (
             <p className="col-span-3 text-center text-slate py-12">No posts in this category yet.</p>
           )}
-          {visible.map((p, i) => (
-            <article
-              key={p.id ?? p.title}
-              style={{ animationDelay: `${(i % 3) * 0.08}s` }}
-              className="animate-fadeUp group
-                         bg-white rounded-2xl border border-black/[0.06] overflow-hidden
-                         transition-all duration-500
-                         hover:-translate-y-2 hover:shadow-royal hover:border-gold/40"
-            >
-              <div className="relative aspect-[16/10] overflow-hidden kenburns-on-hover">
-                <img
-                  src={p.image}
-                  alt={p.title}
-                  loading="lazy"
-                  className="w-full h-full object-cover"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-navy/60 via-transparent to-transparent" />
-                <span className="absolute top-4 left-4 bg-gold text-navy text-[0.7rem]
-                                 font-semibold tracking-[0.16em] uppercase
-                                 px-3 py-1.5 rounded-md shadow-gold">
-                  {p.cat}
-                </span>
-              </div>
-              <div className="p-6 md:p-7">
-                <div className="flex items-center gap-2 text-muted text-[0.72rem]
-                                tracking-[0.12em] uppercase mb-3">
-                  <span>{p.published_at ? formatDate(p.published_at) : p.date}</span>
-                  <span className="inline-block w-1 h-1 rounded-full bg-gold" />
-                  <span>{p.read}</span>
-                </div>
-                <h3 className="font-serif text-navy text-[1.25rem] font-semibold leading-tight
-                               group-hover:text-goldDk transition-colors">
-                  {p.title}
-                </h3>
-                <p className="text-slate text-[0.9rem] leading-[1.75] mt-3 line-clamp-3">
-                  {p.excerpt}
-                </p>
-                <div className="flex items-center justify-between mt-5 pt-5 border-t border-black/[0.06]">
-                  <div className="flex items-center gap-2">
-                    <div className="w-7 h-7 rounded-full bg-gradient-to-br from-gold to-goldDk
-                                    grid place-items-center text-navy font-bold text-[0.7rem]">
-                      {(p.author ?? 'MA').split(' ').map(w => w[0]).join('').slice(0, 2)}
-                    </div>
-                    <span className="text-muted text-[0.78rem]">{p.author}</span>
-                  </div>
-                  <span className="text-goldDk text-[0.78rem] font-semibold tracking-wider uppercase
-                                   group-hover:translate-x-1 transition-transform">
-                    Read &rarr;
+          {visible.map((p, i) => {
+            const href = p.slug ? `#/blog/${p.slug}` : `#/blog/${p.id}`;
+            return (
+              <a
+                key={p.id ?? p.title}
+                href={href}
+                style={{ animationDelay: `${(i % 3) * 0.08}s` }}
+                className="animate-fadeUp group block
+                           bg-white rounded-2xl border border-black/[0.06] overflow-hidden
+                           transition-all duration-500
+                           hover:-translate-y-2 hover:shadow-royal hover:border-gold/40"
+              >
+                <div className="relative aspect-[16/10] overflow-hidden kenburns-on-hover">
+                  <img
+                    src={p.image}
+                    alt={p.title}
+                    loading="lazy"
+                    className="w-full h-full object-cover"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-navy/60 via-transparent to-transparent" />
+                  <span className="absolute top-4 left-4 bg-gold text-navy text-[0.7rem]
+                                   font-semibold tracking-[0.16em] uppercase
+                                   px-3 py-1.5 rounded-md shadow-gold">
+                    {p.cat}
                   </span>
                 </div>
-              </div>
-            </article>
-          ))}
+                <div className="p-6 md:p-7">
+                  <div className="text-muted text-[0.72rem]
+                                  tracking-[0.12em] uppercase mb-3">
+                    {p.published_at ? formatDate(p.published_at) : p.date}
+                  </div>
+                  <h3 className="font-serif text-navy text-[1.25rem] font-semibold leading-tight
+                                 group-hover:text-goldDk transition-colors">
+                    {p.title}
+                  </h3>
+                  <p className="text-slate text-[0.9rem] leading-[1.75] mt-3 line-clamp-3">
+                    {p.excerpt}
+                  </p>
+                  <div className="flex items-center justify-between mt-5 pt-5 border-t border-black/[0.06]">
+                    <div className="flex items-center gap-2">
+                      <div className="w-7 h-7 rounded-full bg-gradient-to-br from-gold to-goldDk
+                                      grid place-items-center text-navy font-bold text-[0.7rem]">
+                        {(p.author ?? 'MA').split(' ').map(w => w[0]).join('').slice(0, 2)}
+                      </div>
+                      <span className="text-muted text-[0.78rem]">{p.author}</span>
+                    </div>
+                    <span className="text-goldDk text-[0.78rem] font-semibold tracking-wider uppercase
+                                     group-hover:translate-x-1 transition-transform">
+                      Read &rarr;
+                    </span>
+                  </div>
+                </div>
+              </a>
+            );
+          })}
         </div>
       )}
     </section>
