@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 const categories = [
   'All',
@@ -97,6 +97,31 @@ const posts = [
 
 export default function Blogs({ limit = null, showHeader = true }) {
   const [active, setActive] = useState('All');
+  const [canScrollLeft, setCanScrollLeft]   = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(false);
+  const scrollRef = useRef(null);
+
+  const updateScrollState = () => {
+    const el = scrollRef.current;
+    if (!el) return;
+    setCanScrollLeft(el.scrollLeft > 4);
+    setCanScrollRight(el.scrollLeft < el.scrollWidth - el.clientWidth - 4);
+  };
+
+  useEffect(() => {
+    updateScrollState();
+    const el = scrollRef.current;
+    if (!el) return;
+    el.addEventListener('scroll', updateScrollState, { passive: true });
+    const ro = new ResizeObserver(updateScrollState);
+    ro.observe(el);
+    return () => { el.removeEventListener('scroll', updateScrollState); ro.disconnect(); };
+  }, []);
+
+  const scroll = (dir) => {
+    scrollRef.current?.scrollBy({ left: dir * 160, behavior: 'smooth' });
+  };
+
   let visible = active === 'All' ? posts : posts.filter(p => p.cat === active);
   if (limit) visible = visible.slice(0, limit);
 
@@ -120,37 +145,83 @@ export default function Blogs({ limit = null, showHeader = true }) {
 
       {/* Blog category title bar */}
       <div className="relative reveal mb-6">
-        <div className="bg-navy rounded-2xl border border-gold/30 px-3 py-2.5 md:px-6 md:py-4
-                        shadow-royal flex items-center gap-2 md:gap-3 overflow-x-auto no-scrollbar">
-          <div className="items-center gap-2 pr-3 mr-2 border-r border-gold/30
-                          shrink-0 hidden md:flex">
-            <span className="inline-block w-1.5 h-1.5 rotate-45 bg-gold" />
-            <span className="text-gold text-[0.7rem] font-semibold tracking-[0.22em] uppercase">
-              Categories
-            </span>
+        <div className="relative bg-navy rounded-2xl border border-gold/30 shadow-royal">
+          {/* Left fade + arrow */}
+          <div className={`pointer-events-none absolute left-0 inset-y-0 w-14 rounded-l-2xl z-10
+                           bg-gradient-to-r from-navy via-navy/80 to-transparent
+                           transition-opacity duration-200
+                           ${canScrollLeft ? 'opacity-100' : 'opacity-0'}`} />
+          <button
+            onClick={() => scroll(-1)}
+            aria-label="Scroll categories left"
+            className={`absolute left-2 top-1/2 -translate-y-1/2 z-20
+                        w-7 h-7 rounded-full bg-gold/20 hover:bg-gold
+                        text-gold hover:text-navy border border-gold/40
+                        flex items-center justify-center transition-all duration-200
+                        ${canScrollLeft ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"
+                 strokeLinecap="round" strokeLinejoin="round" className="w-3.5 h-3.5">
+              <polyline points="15 18 9 12 15 6"/>
+            </svg>
+          </button>
+
+          {/* Scrollable pill row */}
+          <div
+            ref={scrollRef}
+            className="flex items-center gap-2 md:gap-3 overflow-x-auto no-scrollbar
+                       px-3 py-2.5 md:px-6 md:py-4 scroll-smooth"
+          >
+            <div className="items-center gap-2 pr-3 mr-2 border-r border-gold/30
+                            shrink-0 hidden md:flex">
+              <span className="inline-block w-1.5 h-1.5 rotate-45 bg-gold" />
+              <span className="text-gold text-[0.7rem] font-semibold tracking-[0.22em] uppercase">
+                Categories
+              </span>
+            </div>
+            {categories.map(c => {
+              const count = c === 'All' ? posts.length : posts.filter(p => p.cat === c).length;
+              return (
+                <button
+                  key={c}
+                  onClick={() => setActive(c)}
+                  className={`shrink-0 inline-flex items-center gap-1.5
+                              px-3 md:px-4 py-1.5 md:py-2 rounded-full
+                              text-[0.7rem] md:text-[0.78rem] font-semibold
+                              tracking-[0.08em] uppercase transition-all whitespace-nowrap
+                              ${active === c
+                                ? 'bg-gold text-navy shadow-gold'
+                                : 'text-white hover:text-gold hover:bg-gold/15'}`}
+                >
+                  {c}
+                  <span className={`text-[0.6rem] font-bold rounded-full px-1.5 py-0.5 leading-none
+                                    ${active === c ? 'bg-navy/15 text-navy' : 'bg-gold/20 text-gold'}`}>
+                    {count}
+                  </span>
+                </button>
+              );
+            })}
           </div>
-          {categories.map(c => {
-            const count = c === 'All' ? posts.length : posts.filter(p => p.cat === c).length;
-            return (
-              <button
-                key={c}
-                onClick={() => setActive(c)}
-                className={`shrink-0 inline-flex items-center gap-1.5
-                            px-3 md:px-4 py-1.5 md:py-2 rounded-full
-                            text-[0.7rem] md:text-[0.78rem] font-semibold
-                            tracking-[0.08em] uppercase transition-all whitespace-nowrap
-                            ${active === c
-                              ? 'bg-gold text-navy shadow-gold'
-                              : 'text-white hover:text-gold hover:bg-gold/15'}`}
-              >
-                {c}
-                <span className={`text-[0.6rem] font-bold rounded-full px-1.5 py-0.5 leading-none
-                                  ${active === c ? 'bg-navy/15 text-navy' : 'bg-gold/20 text-gold'}`}>
-                  {count}
-                </span>
-              </button>
-            );
-          })}
+
+          {/* Right fade + arrow */}
+          <div className={`pointer-events-none absolute right-0 inset-y-0 w-14 rounded-r-2xl z-10
+                           bg-gradient-to-l from-navy via-navy/80 to-transparent
+                           transition-opacity duration-200
+                           ${canScrollRight ? 'opacity-100' : 'opacity-0'}`} />
+          <button
+            onClick={() => scroll(1)}
+            aria-label="Scroll categories right"
+            className={`absolute right-2 top-1/2 -translate-y-1/2 z-20
+                        w-7 h-7 rounded-full bg-gold/20 hover:bg-gold
+                        text-gold hover:text-navy border border-gold/40
+                        flex items-center justify-center transition-all duration-200
+                        ${canScrollRight ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"
+                 strokeLinecap="round" strokeLinejoin="round" className="w-3.5 h-3.5">
+              <polyline points="9 18 15 12 9 6"/>
+            </svg>
+          </button>
         </div>
       </div>
 
