@@ -26,8 +26,9 @@ steven_moning/
 ├── src/
 │   ├── components/
 │   │   ├── About.jsx
-│   │   ├── Blogs.jsx       (fetches posts from Supabase)
-│   │   ├── BlogsPage.jsx
+│   │   ├── Blogs.jsx         (fetches posts from Supabase, category pills)
+│   │   ├── BlogsPage.jsx     (/blogs index route)
+│   │   ├── BlogPostPage.jsx  (/blog/:slug per-post detail page)
 │   │   ├── Contact.jsx
 │   │   ├── Footer.jsx
 │   │   ├── Hero.jsx
@@ -100,27 +101,62 @@ vercel --prod   # redeploy to pick up the change
 
 ---
 
+## Routing
+
+The app uses a lightweight hash router (no react-router):
+
+| Route                  | Component         | Purpose                              |
+|------------------------|-------------------|--------------------------------------|
+| `#/`                   | `Home`            | Landing page (Hero, Services, etc.)  |
+| `#/properties`         | `PropertiesPage`  | Property listings + category filter  |
+| `#/properties?cat=...` | `PropertiesPage`  | Filtered by `offmkt` / `land` / etc. |
+| `#/blogs`              | `BlogsPage`       | Blog index with category pills       |
+| `#/blog/<slug>`        | `BlogPostPage`    | Individual blog post (full reader)   |
+
+---
+
 ## Supabase — Blog Posts Table
 
 ```sql
 create table public.blog_posts (
   id            bigint generated always as identity primary key,
+  slug          text        not null unique,
   title         text        not null,
   excerpt       text,
   cat           text        not null check (cat in (
-                  'Market Insights', 'Buyer Guide', 'Seller Tips',
-                  'Investment', 'Luxury Living', 'DFW Lifestyle', 'REO & Off-Market'
+                  'Alumni', 'Baby Boomers', 'Dallas Cowboy''s',
+                  'Health & Fitness', 'Lands', 'Local Events', 'News',
+                  'Off Market', 'Property', 'Sports', 'Uncategorized'
                 )),
   image         text,
-  author        text        default 'Moning & Associates',
-  read          text,
-  published_at  timestamptz default now(),
-  created_at    timestamptz default now()
+  author        text        not null default 'Moning & Associates',
+  content       text,
+  published_at  timestamptz not null default now(),
+  created_at    timestamptz not null default now()
 );
 
+create unique index blog_posts_slug_key       on public.blog_posts (slug);
+create        index blog_posts_published_at_idx on public.blog_posts (published_at desc);
+create        index blog_posts_cat_idx        on public.blog_posts (cat);
+
 alter table public.blog_posts enable row level security;
-create policy "Public read" on public.blog_posts for select using (true);
+create policy "Public read blog_posts" on public.blog_posts for select using (true);
 ```
+
+### Content format
+
+The `content` column accepts a tiny markdown subset, parsed line-by-line:
+
+| Syntax           | Renders as          |
+|------------------|---------------------|
+| `## Heading`     | H2                  |
+| `### Heading`    | H3                  |
+| `> Quote text`   | Gold-bordered pull quote |
+| `- item`         | Bulleted list (gold diamond markers) |
+| `**bold**`       | Inline bold         |
+| Blank line       | Paragraph break     |
+
+A heading immediately followed by a list (no blank line) renders correctly as separate elements. When seeding via SQL, use dollar-quoted strings (`$$...$$`) so newlines and quotes inside content are preserved cleanly.
 
 ---
 
