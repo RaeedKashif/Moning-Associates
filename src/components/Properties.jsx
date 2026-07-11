@@ -36,19 +36,27 @@ function lotDisplay(l) {
 // Map a public API listing (meta already stripped server-side) to a card.
 function toCard(l, i) {
   const cat = TYPE_TO_CAT[l.property_type] || 'active';
-  const acres = l.lot_size_acres ? ` · ${l.lot_size_acres} ac` : '';
-  const badge = cat === 'land' ? `Land${acres}`
+  const badge = cat === 'land' ? 'Land'
     : cat === 'offmkt' ? 'Off Market'
     : cat === 'luxury' ? 'Luxury Estate' : 'Active';
+  // Land parcels have no beds/baths/interior sqft — show lot facts instead.
+  const stats = cat === 'land'
+    ? [
+        { l: 'Lot Size', v: lotDisplay(l) },
+        { l: 'Zip', v: l.zip_code || '—' },
+      ]
+    : [
+        { l: 'Beds', v: l.bedrooms ?? '—' },
+        { l: 'Baths', v: l.bathrooms ?? '—' },
+        { l: 'Sq Ft', v: l.square_footage ? Number(l.square_footage).toLocaleString('en-US') : '—' },
+      ];
   return {
     cat,
     badge,
     title: l.title || l.address || 'Untitled listing',
     location: [l.city, l.state].filter(Boolean).join(', ') || l.address || 'Texas',
     price: formatPrice(l.price),
-    beds: cat === 'land' ? '—' : (l.bedrooms ?? '—'),
-    baths: cat === 'land' ? '—' : (l.bathrooms ?? '—'),
-    sqft: cat === 'land' ? lotDisplay(l) : (l.square_footage ? Number(l.square_footage).toLocaleString('en-US') : '—'),
+    stats,
     image: (l.images && l.images[0]) || LAND_IMAGES[i % LAND_IMAGES.length],
   };
 }
@@ -225,10 +233,9 @@ export default function Properties({ initialFilter = 'all', limit = null, showHe
                 {p.location}
               </div>
 
-              <div className="grid grid-cols-3 gap-2 mt-5 pt-5 border-t border-gold/20">
-                <Stat v={p.beds}  l="Beds" />
-                <Stat v={p.baths} l="Baths" />
-                <Stat v={p.sqft}  l="Sq Ft" />
+              <div className={`grid gap-2 mt-5 pt-5 border-t border-gold/20
+                               ${p.stats.length === 2 ? 'grid-cols-2' : 'grid-cols-3'}`}>
+                {p.stats.map((s) => <Stat key={s.l} v={s.v} l={s.l} />)}
               </div>
 
               <a href="#contact"
