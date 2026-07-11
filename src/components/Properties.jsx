@@ -8,89 +8,50 @@ const filters = [
   { key: 'offmkt', label: 'Off Market' },
 ];
 
-const properties = [
-  {
-    cat: 'luxury',
-    badge: 'Luxury Estate',
-    title: 'The Highland Estate',
-    location: 'Highland Park, Dallas',
-    price: '$4,250,000',
-    beds: 6, baths: 7, sqft: '8,420',
-    image: 'https://images.unsplash.com/photo-1613490493576-7fde63acd811?auto=format&fit=crop&w=1200&q=80',
-  },
-  {
-    cat: 'active',
-    badge: 'New Listing',
-    title: 'Modern Frisco Manor',
-    location: 'Frisco, TX',
-    price: '$1,895,000',
-    beds: 5, baths: 5, sqft: '5,210',
-    image: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80',
-  },
-  {
-    cat: 'luxury',
-    badge: 'Featured',
-    title: 'Preston Hollow Residence',
-    location: 'Preston Hollow, Dallas',
-    price: '$3,675,000',
-    beds: 5, baths: 6, sqft: '6,800',
-    image: 'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&w=1200&q=80',
-  },
-  {
-    cat: 'offmkt',
-    badge: 'Off Market',
-    title: 'Lakefront Retreat',
-    location: 'Southlake, TX',
-    price: '$2,950,000',
-    beds: 5, baths: 5, sqft: '5,800',
-    image: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80',
-  },
-  {
-    cat: 'land',
-    badge: 'Land · 12 ac',
-    title: 'Westlake Land Parcel',
-    location: 'Westlake, TX',
-    price: '$1,350,000',
-    beds: '—', baths: '—', sqft: '12 acres',
-    image: 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=1200&q=80',
-  },
-  {
-    cat: 'active',
-    badge: 'Active',
-    title: 'Plano Heritage Home',
-    location: 'West Plano, TX',
-    price: '$1,125,000',
-    beds: 4, baths: 4, sqft: '4,150',
-    image: 'https://images.unsplash.com/photo-1605276373954-0c4a0dac5b12?auto=format&fit=crop&w=1200&q=80',
-  },
-  {
-    cat: 'luxury',
-    badge: 'Estate',
-    title: 'Volunteer Drive Manor',
-    location: 'Westlake, TX',
-    price: '$5,890,000',
-    beds: 7, baths: 8, sqft: '11,200',
-    image: 'https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?auto=format&fit=crop&w=1200&q=80',
-  },
-  {
-    cat: 'offmkt',
-    badge: 'Pocket Listing',
-    title: 'Turtle Creek Penthouse',
-    location: 'Uptown Dallas, TX',
-    price: '$2,180,000',
-    beds: 3, baths: 4, sqft: '3,940',
-    image: 'https://images.unsplash.com/photo-1567496898669-ee935f5f647a?auto=format&fit=crop&w=1200&q=80',
-  },
-  {
-    cat: 'land',
-    badge: 'Land · 5 ac',
-    title: 'Argyle Rolling Acres',
-    location: 'Argyle, TX',
-    price: '$685,000',
-    beds: '—', baths: '—', sqft: '5 acres',
-    image: 'https://images.unsplash.com/photo-1464082354059-27db6ce50048?auto=format&fit=crop&w=1200&q=80',
-  },
+// Admin API that fronts the MongoDB listings (Redis-cached). Override in prod
+// with VITE_LISTINGS_API_URL if the admin app ever moves.
+const API_BASE = import.meta.env.VITE_LISTINGS_API_URL || 'https://stevenmoning-admin.vercel.app';
+
+// Fallback imagery for land parcels (imported listings ship no photos).
+const LAND_IMAGES = [
+  'https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=1200&q=80',
+  'https://images.unsplash.com/photo-1464082354059-27db6ce50048?auto=format&fit=crop&w=1200&q=80',
+  'https://images.unsplash.com/photo-1416879595882-3373a0480b5b?auto=format&fit=crop&w=1200&q=80',
 ];
+
+// property_type (Mongo) -> filter key used by the pills above.
+const TYPE_TO_CAT = { luxury: 'luxury', land: 'land', off_market: 'offmkt' };
+
+function formatPrice(n) {
+  if (n == null) return 'Price on request';
+  return '$' + Number(n).toLocaleString('en-US');
+}
+
+function lotDisplay(l) {
+  if (l.lot_size_acres) return `${l.lot_size_acres} acres`;
+  if (l.lot_size_sqft) return `${Number(l.lot_size_sqft).toLocaleString('en-US')} sq ft`;
+  return '—';
+}
+
+// Map a public API listing (meta already stripped server-side) to a card.
+function toCard(l, i) {
+  const cat = TYPE_TO_CAT[l.property_type] || 'active';
+  const acres = l.lot_size_acres ? ` · ${l.lot_size_acres} ac` : '';
+  const badge = cat === 'land' ? `Land${acres}`
+    : cat === 'offmkt' ? 'Off Market'
+    : cat === 'luxury' ? 'Luxury Estate' : 'Active';
+  return {
+    cat,
+    badge,
+    title: l.title || l.address || 'Untitled listing',
+    location: [l.city, l.state].filter(Boolean).join(', ') || l.address || 'Texas',
+    price: formatPrice(l.price),
+    beds: cat === 'land' ? '—' : (l.bedrooms ?? '—'),
+    baths: cat === 'land' ? '—' : (l.bathrooms ?? '—'),
+    sqft: cat === 'land' ? lotDisplay(l) : (l.square_footage ? Number(l.square_footage).toLocaleString('en-US') : '—'),
+    image: (l.images && l.images[0]) || LAND_IMAGES[i % LAND_IMAGES.length],
+  };
+}
 
 const Stat = ({ v, l }) => (
   <div className="text-center">
@@ -101,18 +62,35 @@ const Stat = ({ v, l }) => (
 
 export default function Properties({ initialFilter = 'all', limit = null, showHeader = true }) {
   const [active, setActive] = useState(initialFilter);
+  const [properties, setProperties] = useState([]);
+  const [status, setStatus] = useState('loading'); // 'loading' | 'ready' | 'error'
 
   useEffect(() => { setActive(initialFilter); }, [initialFilter]);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const res = await fetch(`${API_BASE}/api/listings?status=published&limit=200`);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const { data } = await res.json();
+        if (cancelled) return;
+        setProperties((data || []).map(toCard));
+        setStatus('ready');
+      } catch {
+        if (!cancelled) setStatus('error');
+      }
+    })();
+    return () => { cancelled = true; };
+  }, []);
 
   let visible = active === 'all' ? properties : properties.filter(p => p.cat === active);
   if (limit) visible = visible.slice(0, limit);
 
   return (
-    <section id="properties" className="relative bg-royal-radial
+    <section id="properties" className="relative bg-navy
                                          py-16 md:py-24 px-5 md:px-[6%] overflow-hidden">
       <div className="pointer-events-none absolute inset-0 pattern-crown opacity-40" />
-      <div className="pointer-events-none absolute top-1/3 -left-40 w-[480px] h-[480px]
-                      rounded-full bg-gold/[0.08] blur-3xl" />
 
       {showHeader && (
         <div className="relative reveal max-w-3xl mb-10">
@@ -166,11 +144,38 @@ export default function Properties({ initialFilter = 'all', limit = null, showHe
       </div>
 
       <div className="relative text-white/55 text-[0.78rem] mb-6">
-        Showing <span className="text-gold font-semibold">{visible.length}</span> of{' '}
-        <span className="text-gold font-semibold">{properties.length}</span> properties
+        {status === 'loading'
+          ? 'Loading listings…'
+          : status === 'error'
+          ? 'Unable to load listings right now.'
+          : <>Showing <span className="text-gold font-semibold">{visible.length}</span> of{' '}
+             <span className="text-gold font-semibold">{properties.length}</span> properties</>}
       </div>
 
-      {visible.length === 0 && (
+      {status === 'loading' && (
+        <div className="relative grid sm:grid-cols-2 lg:grid-cols-3 gap-5 md:gap-6">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <div key={i} className="animate-pulse bg-navy2 border border-gold/15 rounded-2xl overflow-hidden">
+              <div className="aspect-[4/3] bg-white/5" />
+              <div className="p-6 space-y-3">
+                <div className="h-5 bg-white/10 rounded w-2/3" />
+                <div className="h-3 bg-white/5 rounded w-1/2" />
+                <div className="h-px bg-gold/10 my-4" />
+                <div className="h-3 bg-white/5 rounded w-full" />
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {status === 'error' && (
+        <div className="relative text-center py-16 border border-gold/20 rounded-2xl bg-navy2/60">
+          <div className="font-serif text-gold text-xl mb-2">Couldn't load listings</div>
+          <div className="text-white/55 text-sm">Please refresh, or reach out and we'll send the full list.</div>
+        </div>
+      )}
+
+      {status === 'ready' && visible.length === 0 && (
         <div className="relative text-center py-16 border border-gold/20 rounded-2xl bg-navy2/60">
           <div className="font-serif text-gold text-xl mb-2">No properties in this category</div>
           <div className="text-white/55 text-sm">Check back soon or browse all listings.</div>
@@ -181,7 +186,7 @@ export default function Properties({ initialFilter = 'all', limit = null, showHe
            className="relative grid sm:grid-cols-2 lg:grid-cols-3 gap-5 md:gap-6">
         {visible.map((p, i) => (
           <article
-            key={p.title}
+            key={`${p.title}-${i}`}
             style={{ animationDelay: `${(i % 3) * 0.08}s` }}
             className={`animate-fadeUp group royal-card
                         bg-navy2 border border-gold/20 rounded-2xl overflow-hidden
