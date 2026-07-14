@@ -4,12 +4,8 @@ export default function PropertiesPage({ initialFilter = 'all' }) {
   return (
     <main className="pt-[76px]">
       {/* Page hero */}
-      <section className="relative bg-royal-deep overflow-hidden px-5 md:px-[6%] py-14 md:py-28">
+      <section className="relative bg-navy overflow-hidden px-5 md:px-[6%] py-14 md:py-28">
         <div className="pointer-events-none absolute inset-0 pattern-crown opacity-40" />
-        <div className="pointer-events-none absolute -top-40 -right-40 w-[500px] h-[500px]
-                        rounded-full bg-gold/10 blur-3xl animate-pulseGold" />
-        <div className="pointer-events-none absolute -bottom-32 -left-32 w-[460px] h-[460px]
-                        rounded-full bg-wine/15 blur-3xl" />
 
         <div className="relative max-w-4xl mx-auto text-center">
           <div className="flex items-center justify-center gap-3 mb-5 animate-fadeUp">
@@ -25,9 +21,9 @@ export default function PropertiesPage({ initialFilter = 'all' }) {
           </h1>
           <p className="text-white/70 text-[clamp(0.95rem,1.4vw,1.1rem)] leading-[1.85] max-w-2xl mx-auto mt-6
                         animate-fadeUp [animation-delay:0.2s]">
-            From quiet off-market estates to active luxury listings and a few choice
-            stretches of DFW land — every property here is one we'd walk through with
-            a client ourselves.
+            Land is where the real deals get made in DFW. These are the parcels we're
+            working right now — some just hit the MLS, and some you won't find
+            anywhere but here.
           </p>
 
           <div className="royal-divider mt-8 animate-fadeUp [animation-delay:0.3s]">
