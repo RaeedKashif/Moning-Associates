@@ -14,8 +14,19 @@ const API_BASE = import.meta.env.VITE_LISTINGS_API_URL || 'https://stevenmoning-
 
 const PAGE_SIZE = 9;
 
-// property_type (Mongo) -> filter key used by the pills above.
+// property_type (Mongo) -> what the property IS. Drives the badge and which
+// stats a card shows. Sales channel is a separate axis (is_off_market), so a
+// parcel can be land AND off-market and count under both pills.
 const TYPE_TO_CAT = { luxury: 'luxury', land: 'land', off_market: 'offmkt' };
+
+function matchesFilter(p, key) {
+  switch (key) {
+    case 'all':    return true;
+    case 'offmkt': return p.offMarket;        // sold privately, never on the MLS
+    case 'active': return !p.offMarket;       // actively listed on the MLS
+    default:       return p.cat === key;      // luxury / land -> physical type
+  }
+}
 
 // Never invent a figure. A listing with no price in the source data says so.
 function formatPrice(n) {
@@ -50,6 +61,7 @@ function toCard(l) {
     id: l.id,
     cat,
     badge,
+    offMarket: l.is_off_market === true,
     title: l.title || l.address || 'Untitled listing',
     location: [l.city, l.state].filter(Boolean).join(', ') || l.address || 'Texas',
     price: formatPrice(l.price),
@@ -92,12 +104,18 @@ function PropertyCard({ p }) {
           {p.badge}
         </span>
 
-        {p.mls && (
+        {/* An off-market deal is never on the MLS, so these never collide. */}
+        {p.mls ? (
           <span className="absolute top-3 right-3 bg-navy/90 border border-gold/25 text-white/70
                            rounded text-[0.6rem] tracking-[0.1em] px-2 py-1">
             MLS {p.mls}
           </span>
-        )}
+        ) : p.offMarket ? (
+          <span className="absolute top-3 right-3 bg-navy/90 border border-gold/40 text-gold
+                           rounded text-[0.6rem] font-semibold tracking-[0.12em] uppercase px-2 py-1">
+            Off Market
+          </span>
+        ) : null}
       </div>
 
       <div className="flex flex-col flex-1 p-5">
@@ -209,7 +227,7 @@ export default function Properties({ initialFilter = 'all', limit = null, showHe
     return () => { cancelled = true; };
   }, []);
 
-  const matching = active === 'all' ? properties : properties.filter(p => p.cat === active);
+  const matching = properties.filter(p => matchesFilter(p, active));
 
   // `limit` (the homepage teaser) shows a fixed slice and never paginates.
   const paginated = !limit;
@@ -256,9 +274,7 @@ export default function Properties({ initialFilter = 'all', limit = null, showHe
 
       <div ref={gridTop} className="relative reveal mb-6 flex flex-wrap gap-2 md:gap-3 scroll-mt-28">
         {filters.map(f => {
-          const count = f.key === 'all'
-            ? properties.length
-            : properties.filter(p => p.cat === f.key).length;
+          const count = properties.filter(p => matchesFilter(p, f.key)).length;
           return (
             <button
               key={f.key}
