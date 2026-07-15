@@ -6,6 +6,7 @@
   html { scroll-behavior: smooth; }
   body {
     @apply font-sans bg-cream text-[#1C1C1C] antialiased;
+    line-height: 1.6;
     overflow-x: hidden;
   }
   body.menu-open { overflow: hidden; }
@@ -54,17 +55,14 @@
   .section-sub {
     @apply text-slate text-[clamp(0.9rem,1.5vw,1.02rem)] leading-[1.8] max-w-xl;
   }
+  /* Solid panel (was a frosted-glass card) — flat navy, single gold hairline */
   .glass-card {
-    @apply bg-white/[0.04] border border-white/10 backdrop-blur-md rounded-2xl;
+    @apply bg-navy2 border border-gold/15 rounded-2xl;
   }
-  /* Royal gold-foil text */
+  /* Flat gold accent text (was an animated gold gradient) */
   .gold-foil {
-    background: linear-gradient(90deg, #A07830 0%, #E8C879 25%, #D4A84B 50%, #F0DDB0 65%, #D4A84B 80%, #A07830 100%);
-    background-size: 200% auto;
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-    animation: shimmer 6s linear infinite;
+    color: #D4A84B;
+    -webkit-text-fill-color: currentColor;
   }
   /* Royal divider with gold diamond */
   .royal-divider {
@@ -197,7 +195,7 @@
 
 /* Property card price ribbon */
 .price-ribbon {
-  background: linear-gradient(135deg, #D4A84B 0%, #A07830 100%);
+  background: #D4A84B;
   box-shadow: 0 6px 16px rgba(212,168,75,0.35);
 }
 

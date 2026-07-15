@@ -4,12 +4,8 @@ export default function BlogsPage() {
   return (
     <main className="pt-[76px]">
       {/* Page hero */}
-      <section className="relative bg-royal-deep overflow-hidden px-5 md:px-[6%] py-14 md:py-28">
+      <section className="relative bg-navy overflow-hidden px-5 md:px-[6%] py-14 md:py-28">
         <div className="pointer-events-none absolute inset-0 pattern-crown opacity-40" />
-        <div className="pointer-events-none absolute -top-40 -left-40 w-[500px] h-[500px]
-                        rounded-full bg-gold/10 blur-3xl animate-pulseGold" />
-        <div className="pointer-events-none absolute -bottom-32 -right-32 w-[460px] h-[460px]
-                        rounded-full bg-wine/15 blur-3xl" />
 
         <div className="relative max-w-4xl mx-auto text-center">
           <div className="flex items-center justify-center gap-3 mb-5 animate-fadeUp">

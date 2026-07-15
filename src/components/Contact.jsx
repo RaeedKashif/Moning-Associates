@@ -7,7 +7,7 @@ const I = (p) => (
 );
 
 const info = [
-  { label: 'Phone', value: '469-580-9228',
+  { label: 'Phone', value: '+1 469-580-9228',
     icon: I(<path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.38 2 2 0 0 1 3.6 1h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.75A16 16 0 0 0 16 16.84l.95-.96a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/>) },
   { label: 'Email', value: 'steven.moning@exprealty.com',
     icon: I(<><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></>) },
@@ -24,10 +24,6 @@ export default function Contact() {
       className="relative bg-navy py-24 px-5 md:px-[6%]
                  grid lg:grid-cols-2 gap-12 lg:gap-16 items-start overflow-hidden"
     >
-      <div className="absolute top-1/2 left-[30%] -translate-x-1/2 -translate-y-1/2
-                      w-[500px] h-[500px] rounded-full bg-gold/[0.07] blur-3xl
-                      pointer-events-none" />
-
       {/* Left */}
       <div className="relative reveal">
         <span className="text-[0.7rem] font-semibold tracking-[0.28em]
