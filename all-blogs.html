@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>All Blogs | Moning & Associates</title>
+  <meta name="description" content="Real estate insights, DFW market updates, and expert advice from Steven Moning of Moning & Associates.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --gold: #C9A84C; --gold-2: #E2C97E; --gold-3: #A07830;
+      --navy: #0B1829; --navy-2: #142236;
+      --cream: #FAF6EF; --cream-2: #F3EDE3;
+      --slate: #4A5568; --light: #8A94A6; --white: #FFFFFF;
+      --pad-x: clamp(1.25rem, 5vw, 8%);
+    }
+    html { scroll-behavior: smooth; overflow-x: hidden; }
+    body { font-family: 'DM Sans', sans-serif; background: var(--white); color: #1C1C1C; overflow-x: hidden; }
+    body.menu-open { overflow: hidden; }
+    nav { position: fixed; top: 0; left: 0; right: 0; z-index: 9999; height: 72px; display: flex; align-items: center; justify-content: space-between; padding: 0 var(--pad-x); background: rgba(11,24,41,0.97); backdrop-filter: blur(20px); box-shadow: 0 1px 0 rgba(201,168,76,0.12); }
+    .nav-logo { text-decoration: none; display: flex; flex-direction: column; gap: 3px; }
+    .nav-logo-main { font-family: 'Cormorant Garamond', serif; font-size: clamp(1.1rem,3vw,1.45rem); font-weight: 600; color: var(--gold); line-height: 1.1; letter-spacing: 0.5px; white-space: nowrap; display: block; }
+    .nav-logo-sub { font-size: 0.62rem; font-weight: 500; color: rgba(255,255,255,0.45); letter-spacing: 2.5px; text-transform: uppercase; display: block; }
+    .nav-menu { display: flex; align-items: center; gap: 0.3rem; list-style: none; }
+    .nav-menu a { color: rgba(255,255,255,0.75); text-decoration: none; font-size: 0.85rem; font-weight: 500; padding: 0.5rem 0.85rem; border-radius: 6px; transition: all 0.25s; white-space: nowrap; }
+    .nav-menu a:hover { color: var(--gold); background: rgba(201,168,76,0.08); }
+    .nav-menu .nav-btn { background: var(--gold); color: var(--navy) !important; padding: 0.55rem 1.3rem; font-weight: 600 !important; margin-left: 0.4rem; border-radius: 7px; }
+    .nav-menu .nav-btn:hover { background: var(--gold-2); box-shadow: 0 6px 20px rgba(201,168,76,0.35); }
+    .nav-menu li { position: relative; }
+    .has-dropdown > a { display: flex; align-items: center; gap: 0.32rem; }
+    .has-dropdown > a .dd-chevron { width: 11px; height: 11px; flex-shrink: 0; transition: transform 0.25s ease; }
+    .has-dropdown:hover > a .dd-chevron { transform: rotate(180deg); }
+    .nav-dropdown-menu { position: absolute; top: calc(100% + 6px); left: 0; min-width: 215px; background: var(--navy-2); border: 1px solid rgba(201,168,76,0.18); border-radius: 10px; padding: 0.5rem 0; box-shadow: 0 20px 50px rgba(0,0,0,0.45); opacity: 0; visibility: hidden; transform: translateY(-6px); transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s ease; list-style: none; z-index: 10000; }
+    .has-dropdown:hover .nav-dropdown-menu { opacity: 1; visibility: visible; transform: translateY(0); }
+    .nav-dropdown-menu li a { display: block; color: rgba(255,255,255,0.75); padding: 0.65rem 1.2rem; font-size: 0.83rem; font-weight: 500; transition: color 0.2s, background 0.2s, padding-left 0.2s; white-space: nowrap; background: transparent; border-radius: 0; }
+    .nav-dropdown-menu li a:hover { color: var(--gold); background: rgba(201,168,76,0.09); padding-left: 1.5rem; }
+    .nav-dropdown-menu li a::after { display: none !important; }
+    .nav-menu a:not(.nav-btn) { position: relative; }
+    .nav-menu a:not(.nav-btn)::after { content: ''; position: absolute; bottom: 2px; left: 0.85rem; right: 0.85rem; height: 1.5px; background: var(--gold); transform: scaleX(0); transition: transform 0.25s ease; }
+    .nav-menu a:not(.nav-btn):hover::after { transform: scaleX(1); }
+    .nav-menu a.nav-active:not(.nav-btn) { color: var(--gold) !important; }
+    .nav-menu a.nav-active:not(.nav-btn)::after { transform: scaleX(1); }
+    .nav-hamburger { display: none; flex-direction: column; justify-content: center; align-items: center; width: 44px; height: 44px; gap: 5px; background: none; border: none; cursor: pointer; padding: 0; flex-shrink: 0; }
+    .nav-hamburger span { display: block; width: 24px; height: 2px; background: var(--white); border-radius: 2px; transition: all 0.3s ease; transform-origin: center; }
+    .nav-hamburger.active span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .nav-hamburger.active span:nth-child(2) { opacity: 0; transform: scaleX(0); }
+    .nav-hamburger.active span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+    .nav-drawer { display: none; position: fixed; top: 72px; left: 0; right: 0; bottom: 0; background: var(--navy); z-index: 9998; flex-direction: column; padding: 2rem var(--pad-x); overflow-y: auto; transform: translateY(-10px); opacity: 0; transition: opacity 0.25s ease, transform 0.25s ease; }
+    .nav-drawer.open { opacity: 1; transform: translateY(0); }
+    .nav-drawer a { display: block; color: rgba(255,255,255,0.8); text-decoration: none; font-size: 1.4rem; font-weight: 500; padding: 1rem 0; border-bottom: 1px solid rgba(255,255,255,0.06); transition: color 0.2s; }
+    .nav-drawer a:hover { color: var(--gold); }
+    .nav-drawer .drawer-cta { display: inline-flex; align-items: center; justify-content: center; background: var(--gold); color: var(--navy) !important; font-weight: 600 !important; border-radius: 10px; padding: 1rem; margin-top: 1.5rem; font-size: 1rem !important; border-bottom: none !important; }
+    .nav-drawer .drawer-contact { margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid rgba(255,255,255,0.08); }
+    .nav-drawer .drawer-contact p { color: rgba(255,255,255,0.35); font-size: 0.75rem; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 0.5rem; }
+    .nav-drawer .drawer-contact a { font-size: 1rem; color: var(--white); border-bottom: none; padding: 0.3rem 0; }
+    .drawer-dropdown-item { width: 100%; }
+    .drawer-has-sub { display: flex; justify-content: space-between; align-items: center; width: 100%; background: none; border: none; border-bottom: 1px solid rgba(255,255,255,0.06); color: rgba(255,255,255,0.8); font-family: 'DM Sans', sans-serif; font-size: 1.4rem; font-weight: 500; padding: 1rem 0; cursor: pointer; transition: color 0.2s; }
+    .drawer-has-sub:hover { color: var(--gold); }
+    .drawer-chevron { font-size: 0.85rem; transition: transform 0.25s; }
+    .drawer-has-sub.open .drawer-chevron { transform: rotate(180deg); }
+    .drawer-sub { display: none; padding-left: 1rem; border-bottom: 1px solid rgba(255,255,255,0.06); }
+    .drawer-sub.open { display: block; }
+    .drawer-sub-link { display: block; color: rgba(255,255,255,0.6); font-size: 1.05rem; font-weight: 400; padding: 0.6rem 0; border-bottom: 1px solid rgba(255,255,255,0.04); text-decoration: none; transition: color 0.2s; }
+    .drawer-sub-link:hover { color: var(--gold); }
+
+    /* PAGE HERO */
+    .page-hero { background: var(--navy); padding: 10rem var(--pad-x) 5rem; text-align: center; position: relative; overflow: hidden; }
+    .page-hero::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse 80% 60% at 50% 100%, rgba(201,168,76,0.08) 0%, transparent 70%); pointer-events: none; }
+    .hero-tag { display: inline-flex; align-items: center; gap: 0.7rem; margin-bottom: 1.5rem; }
+    .hero-tag-line { width: 28px; height: 1px; background: var(--gold); }
+    .hero-tag span { font-size: 0.7rem; font-weight: 600; color: var(--gold); letter-spacing: 3px; text-transform: uppercase; }
+    .page-hero h1 { font-family: 'Cormorant Garamond', serif; font-size: clamp(2.4rem,5vw,4rem); font-weight: 600; color: var(--white); margin-bottom: 1rem; }
+    .page-hero p { color: rgba(255,255,255,0.55); font-size: 1rem; max-width: 540px; margin: 0 auto; line-height: 1.8; }
+
+    /* FEATURED POST */
+    .blog-section { padding: 5rem var(--pad-x); background: var(--cream); }
+    .section-label { font-size: 0.7rem; font-weight: 600; color: var(--gold); letter-spacing: 3px; text-transform: uppercase; margin-bottom: 1.5rem; display: block; }
+    .featured-post { display: grid; grid-template-columns: 1fr 1fr; gap: 0; background: var(--white); border-radius: 16px; overflow: hidden; box-shadow: 0 4px 30px rgba(0,0,0,0.08); margin-bottom: 4rem; }
+    .featured-img { background: linear-gradient(135deg,#0B1829 0%,#142236 50%,#1C3050 100%); min-height: 360px; position: relative; display: flex; align-items: center; justify-content: center; }
+    .featured-img svg { opacity: 0.12; }
+    .featured-cat { position: absolute; top: 1.5rem; left: 1.5rem; background: var(--gold); color: var(--navy); font-size: 0.68rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; padding: 0.3rem 0.8rem; border-radius: 4px; }
+    .featured-body { padding: 3rem; display: flex; flex-direction: column; justify-content: center; }
+    .featured-meta { font-size: 0.78rem; color: var(--light); margin-bottom: 1rem; }
+    .featured-body h2 { font-family: 'Cormorant Garamond', serif; font-size: clamp(1.5rem,2.5vw,2rem); font-weight: 600; color: var(--navy); line-height: 1.3; margin-bottom: 1rem; }
+    .featured-body p { color: var(--slate); font-size: 0.92rem; line-height: 1.8; margin-bottom: 1.5rem; }
+    .read-more { display: inline-flex; align-items: center; gap: 0.4rem; color: var(--navy); font-size: 0.85rem; font-weight: 600; text-decoration: none; border-bottom: 2px solid var(--gold); padding-bottom: 1px; transition: color 0.2s; }
+    .read-more:hover { color: var(--gold-3); }
+
+    /* BLOG GRID */
+    .blog-grid-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem; }
+    .blog-grid-title { font-family: 'Cormorant Garamond', serif; font-size: 2rem; font-weight: 600; color: var(--navy); }
+    .blog-count { font-size: 0.85rem; color: var(--light); background: var(--white); padding: 0.4rem 1rem; border-radius: 20px; }
+    .blog-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.8rem; }
+    .blog-card { background: var(--white); border-radius: 14px; overflow: hidden; box-shadow: 0 2px 20px rgba(0,0,0,0.07); transition: transform 0.3s ease, box-shadow 0.3s ease; }
+    .blog-card:hover { transform: translateY(-5px); box-shadow: 0 10px 36px rgba(0,0,0,0.13); }
+    .blog-card-img { height: 180px; position: relative; display: flex; align-items: center; justify-content: center; }
+    .blog-card-img svg { opacity: 0.12; }
+    .blog-card-cat { position: absolute; top: 1rem; left: 1rem; background: rgba(201,168,76,0.15); color: var(--gold-3); font-size: 0.66rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; padding: 0.25rem 0.7rem; border-radius: 4px; }
+    .blog-card-body { padding: 1.4rem; }
+    .blog-card-meta { font-size: 0.75rem; color: var(--light); margin-bottom: 0.6rem; }
+    .blog-card-body h3 { font-family: 'Cormorant Garamond', serif; font-size: 1.15rem; font-weight: 600; color: var(--navy); line-height: 1.4; margin-bottom: 0.7rem; }
+    .blog-card-body p { font-size: 0.82rem; color: var(--slate); line-height: 1.7; margin-bottom: 1.1rem; }
+    .blog-card-read { display: inline-flex; align-items: center; gap: 0.35rem; color: var(--navy); font-size: 0.82rem; font-weight: 600; text-decoration: none; border-bottom: 1.5px solid var(--gold); padding-bottom: 1px; transition: color 0.2s; }
+    .blog-card-read:hover { color: var(--gold-3); }
+
+    /* CTA */
+    .cta-strip { background: var(--navy); padding: 4rem var(--pad-x); text-align: center; }
+    .cta-strip h2 { font-family: 'Cormorant Garamond', serif; font-size: clamp(1.8rem,3vw,2.6rem); font-weight: 600; color: var(--white); margin-bottom: 0.8rem; }
+    .cta-strip p { color: rgba(255,255,255,0.5); max-width: 480px; margin: 0 auto 2rem; line-height: 1.8; }
+    .btn-gold { display: inline-flex; align-items: center; gap: 0.6rem; background: var(--gold); color: var(--navy); padding: 0.9rem 2rem; border-radius: 8px; font-weight: 600; font-size: 0.92rem; text-decoration: none; transition: all 0.3s; }
+    .btn-gold:hover { background: var(--gold-2); }
+
+    /* FOOTER */
+    footer { background: var(--navy-2); border-top: 1px solid rgba(201,168,76,0.1); padding: 2.5rem var(--pad-x) 1.5rem; }
+    .footer-inner { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1.5rem; margin-bottom: 2rem; }
+    .footer-logo { font-family: 'Cormorant Garamond', serif; font-size: 1.3rem; font-weight: 600; color: var(--gold); }
+    .footer-logo span { display: block; font-family: 'DM Sans', sans-serif; font-size: 0.65rem; color: rgba(255,255,255,0.3); letter-spacing: 2px; text-transform: uppercase; margin-top: 3px; }
+    .footer-links { list-style: none; display: flex; gap: 1.5rem; flex-wrap: wrap; }
+    .footer-links a { color: rgba(255,255,255,0.45); text-decoration: none; font-size: 0.85rem; transition: color 0.2s; }
+    .footer-links a:hover { color: var(--gold); }
+    .footer-bottom { border-top: 1px solid rgba(255,255,255,0.06); padding-top: 1.2rem; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem; }
+    .footer-copy, .footer-lic { font-size: 0.75rem; color: rgba(255,255,255,0.25); }
+
+    @media (max-width: 960px) { .featured-post { grid-template-columns: 1fr; } .featured-img { min-height: 240px; } .blog-grid { grid-template-columns: repeat(2,1fr); } }
+    @media (max-width: 768px) { .nav-menu { display: none; } .nav-hamburger { display: flex; } .nav-drawer { display: flex; } }
+    @media (max-width: 600px) { .blog-grid { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <a href="index.html" class="nav-logo">
+      <span class="nav-logo-main">Moning & Associates</span>
+      <span class="nav-logo-sub">eXp Realty · DFW Premier</span>
+    </a>
+    <ul class="nav-menu">
+      <li><a href="index.html#services">Services</a></li>
+      <li class="has-dropdown">
+        <a href="index.html#about">All off Properties
+          <svg class="dd-chevron" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 4l4 4 4-4"/></svg>
+        </a>
+        <ul class="nav-dropdown-menu">
+          <li><a href="off-market-properties.html">Off Market Properties</a></li>
+          <li><a href="lands.html">Lands</a></li>
+          <li><a href="luxury-properties.html">Luxury Properties</a></li>
+          <li><a href="active-listing.html">Active Listing</a></li>
+        </ul>
+      </li>
+      <li><a href="all-blogs.html" class="nav-active">All Blogs</a></li>
+      <li><a href="index.html#team">Team</a></li>
+      <li><a href="index.html#contact" class="nav-btn">Contact Us</a></li>
+    </ul>
+    <button class="nav-hamburger" id="hamburger" aria-label="Open menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+
+  <div class="nav-drawer" id="drawer">
+    <a href="index.html#services" class="drawer-link">Services</a>
+    <div class="drawer-dropdown-item">
+      <button class="drawer-has-sub" id="drawerAboutBtn">All off Properties <span class="drawer-chevron">&#9660;</span></button>
+      <div class="drawer-sub" id="drawerAboutSub">
+        <a href="off-market-properties.html" class="drawer-sub-link">Off Market Properties</a>
+        <a href="lands.html" class="drawer-sub-link">Lands</a>
+        <a href="luxury-properties.html" class="drawer-sub-link">Luxury Properties</a>
+        <a href="active-listing.html" class="drawer-sub-link">Active Listing</a>
+      </div>
+    </div>
+    <a href="all-blogs.html" class="drawer-link">All Blogs</a>
+    <a href="index.html#team" class="drawer-link">Team</a>
+    <a href="index.html#contact" class="drawer-cta">Contact Us &rarr;</a>
+    <div class="drawer-contact">
+      <p>Reach Steven directly</p>
+      <a href="tel:4695809228">469-580-9228</a>
+      <a href="mailto:steven.moning@exprealty.com">steven.moning@exprealty.com</a>
+    </div>
+  </div>
+
+  <!-- PAGE HERO -->
+  <section class="page-hero">
+    <div class="hero-tag"><span class="hero-tag-line"></span><span>Insights & Advice</span></div>
+    <h1>All Blogs</h1>
+    <p>Market updates, investment strategies, and honest real estate perspective from 18+ years in the DFW trenches.</p>
+  </section>
+
+  <!-- BLOG CONTENT -->
+  <section class="blog-section">
+
+    <!-- Featured Post -->
+    <span class="section-label">Featured</span>
+    <div class="featured-post">
+      <div class="featured-img">
+        <svg width="100" height="100" viewBox="0 0 24 24" fill="white"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+        <span class="featured-cat">Market Report</span>
+      </div>
+      <div class="featured-body">
+        <p class="featured-meta">May 15, 2026 &nbsp;·&nbsp; 8 min read &nbsp;·&nbsp; By Steven Moning</p>
+        <h2>The DFW Market Report: What's Really Happening in Q2 2026</h2>
+        <p>Inventory is up, rates have stabilised, and buyers are back at the table. But not every submarket is created equal — here's where the real opportunities sit right now across Dallas, Frisco, McKinney, and beyond.</p>
+        <a href="index.html#contact" class="read-more">Read Full Article &#8594;</a>
+      </div>
+    </div>
+
+    <!-- Blog Grid -->
+    <div class="blog-grid-header">
+      <h2 class="blog-grid-title">Recent Articles</h2>
+      <span class="blog-count">8 Articles</span>
+    </div>
+    <div class="blog-grid">
+
+      <div class="blog-card">
+        <div class="blog-card-img" style="background: linear-gradient(135deg,#0B1829 0%,#0D3B4A 100%);">
+          <svg width="60" height="60" viewBox="0 0 24 24" fill="white"><path d="M3 9.5L12 3l9 6.5V21H15v-5h-6v5H3V9.5z"/></svg>
+          <span class="blog-card-cat">Off-Market</span>
+        </div>
+        <div class="blog-card-body">
+          <p class="blog-card-meta">Apr 28, 2026 · 6 min read</p>
+          <h3>Why Off-Market Properties Are the Smartest Buy in Dallas Right Now</h3>
+          <p>With competition cooling slightly on the MLS, savvy buyers are turning to off-market deals to find real value without the bidding wars.</p>
+          <a href="index.html#contact" class="blog-card-read">Read More &#8594;</a>
+        </div>
+      </div>
+
+      <div class="blog-card">
+        <div class="blog-card-img" style="background: linear-gradient(135deg,#0A2418 0%,#0D3B2E 100%);">
+          <svg width="60" height="60" viewBox="0 0 24 24" fill="white"><path d="M2 20h20M4 20V10l8-7 8 7v10M9 20v-6h6v6"/></svg>
+          <span class="blog-card-cat">Land</span>
+        </div>
+        <div class="blog-card-body">
+          <p class="blog-card-meta">Apr 10, 2026 · 5 min read</p>
+          <h3>Land Investment in North Texas: What You Need to Know Before Buying</h3>
+          <p>From zoning changes in Celina to infrastructure build-outs in Prosper, land in the Collin County corridor is appreciating fast — but the details matter.</p>
+          <a href="index.html#contact" class="blog-card-read">Read More &#8594;</a>
+        </div>
+      </div>
+
+      <div class="blog-card">
+        <div class="blog-card-img" style="background: linear-gradient(135deg,#1A0F00 0%,#3D2800 100%);">
+          <svg width="60" height="60" viewBox="0 0 24 24" fill="white"><path d="M3 9.5L12 3l9 6.5V21H15v-5h-6v5H3V9.5z"/></svg>
+          <span class="blog-card-cat">Luxury</span>
+        </div>
+        <div class="blog-card-body">
+          <p class="blog-card-meta">Mar 25, 2026 · 7 min read</p>
+          <h3>Luxury Real Estate: How Southlake and Highland Park Compare in 2026</h3>
+          <p>Two of DFW's most prestigious zip codes, two very different buyer experiences. Here's an honest breakdown of what your dollar actually buys in each.</p>
+          <a href="index.html#contact" class="blog-card-read">Read More &#8594;</a>
+        </div>
+      </div>
+
+      <div class="blog-card">
+        <div class="blog-card-img" style="background: linear-gradient(135deg,#1C2540 0%,#2C3E68 100%);">
+          <svg width="60" height="60" viewBox="0 0 24 24" fill="white"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+          <span class="blog-card-cat">First-Time Buyers</span>
+        </div>
+        <div class="blog-card-body">
+          <p class="blog-card-meta">Mar 8, 2026 · 9 min read</p>
+          <h3>First-Time Buyer's Guide to the DFW Suburbs in 2026</h3>
+          <p>Allen, Forney, Anna, Fate — which suburb delivers the best schools, commute, and price per square foot for first-time buyers right now?</p>
+          <a href="index.html#contact" class="blog-card-read">Read More &#8594;</a>
+        </div>
+      </div>
+
+      <div class="blog-card">
+        <div class="blog-card-img" style="background: linear-gradient(135deg,#1A1035 0%,#2D1A52 100%);">
+          <svg width="60" height="60" viewBox="0 0 24 24" fill="white"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+          <span class="blog-card-cat">REO</span>
+        </div>
+        <div class="blog-card-body">
+          <p class="blog-card-meta">Feb 20, 2026 · 6 min read</p>
+          <h3>REO Properties: The Hidden Opportunity Most Buyers Miss</h3>
+          <p>Bank-owned properties still offer real equity upside — but navigating the process without experience can cost you. Here's how Steven approaches REO deals.</p>
+          <a href="index.html#contact" class="blog-card-read">Read More &#8594;</a>
+        </div>
+      </div>
+
+      <div class="blog-card">
+        <div class="blog-card-img" style="background: linear-gradient(135deg,#0A2930 0%,#0D4A38 100%);">
+          <svg width="60" height="60" viewBox="0 0 24 24" fill="white"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+          <span class="blog-card-cat">Strategy</span>
+        </div>
+        <div class="blog-card-body">
+          <p class="blog-card-meta">Feb 3, 2026 · 5 min read</p>
+          <h3>How to Navigate Multiple-Offer Situations in a Competitive Market</h3>
+          <p>When three offers land on the same property the same weekend, preparation and positioning separate winners from the ones who keep losing out.</p>
+          <a href="index.html#contact" class="blog-card-read">Read More &#8594;</a>
+        </div>
+      </div>
+
+      <div class="blog-card">
+        <div class="blog-card-img" style="background: linear-gradient(135deg,#142236 0%,#2D1B4E 100%);">
+          <svg width="60" height="60" viewBox="0 0 24 24" fill="white"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+          <span class="blog-card-cat">Investment</span>
+        </div>
+        <div class="blog-card-body">
+          <p class="blog-card-meta">Jan 18, 2026 · 8 min read</p>
+          <h3>Investment Property ROI: A Realistic Look at DFW Returns</h3>
+          <p>Cap rates, cash-on-cash returns, appreciation projections — Steven cuts through the hype and shares what investors are actually seeing in today's DFW market.</p>
+          <a href="index.html#contact" class="blog-card-read">Read More &#8594;</a>
+        </div>
+      </div>
+
+      <div class="blog-card">
+        <div class="blog-card-img" style="background: linear-gradient(135deg,#0D2B0A 0%,#1E4A14 100%);">
+          <svg width="60" height="60" viewBox="0 0 24 24" fill="white"><path d="M2 20h20M4 20V10l8-7 8 7v10M9 20v-6h6v6"/></svg>
+          <span class="blog-card-cat">Growth Markets</span>
+        </div>
+        <div class="blog-card-body">
+          <p class="blog-card-meta">Jan 1, 2026 · 6 min read</p>
+          <h3>The Celina & Prosper Boom: Is It Too Late to Buy in North DFW?</h3>
+          <p>Home values in Celina doubled in five years. Prosper is still building. Is the window still open for buyers, or has the easy money already been made?</p>
+          <a href="index.html#contact" class="blog-card-read">Read More &#8594;</a>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <section class="cta-strip">
+    <h2>Have a Question About the Market?</h2>
+    <p>No generic answers here. Reach out directly and Steven will give you a straight, honest read on whatever you're trying to figure out.</p>
+    <a href="index.html#contact" class="btn-gold">Ask Steven &#8594;</a>
+  </section>
+
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-logo">Moning & Associates<span>eXp Realty · DFW Premier Real Estate</span></div>
+      <ul class="footer-links">
+        <li><a href="index.html#services">Services</a></li>
+        <li><a href="index.html#about">About</a></li>
+        <li><a href="index.html#team">Team</a></li>
+        <li><a href="index.html#contact">Contact</a></li>
+      </ul>
+    </div>
+    <div class="footer-bottom">
+      <span class="footer-copy">&copy; 2026 Moning & Associates. All Rights Reserved.</span>
+      <span class="footer-lic">Steven Moning · eXp Realty · 469-580-9228</span>
+    </div>
+  </footer>
+
+  <script>
+    const hamburger = document.getElementById('hamburger');
+    const drawer = document.getElementById('drawer');
+    function toggleMenu(open) { hamburger.classList.toggle('active', open); hamburger.setAttribute('aria-expanded', String(open)); drawer.classList.toggle('open', open); document.body.classList.toggle('menu-open', open); }
+    hamburger.addEventListener('click', () => toggleMenu(!drawer.classList.contains('open')));
+    const aboutBtn = document.getElementById('drawerAboutBtn');
+    const aboutSub = document.getElementById('drawerAboutSub');
+    if (aboutBtn && aboutSub) { aboutBtn.addEventListener('click', () => { const o = aboutSub.classList.contains('open'); aboutSub.classList.toggle('open', !o); aboutBtn.classList.toggle('open', !o); }); }
+    drawer.querySelectorAll('a').forEach(a => a.addEventListener('click', () => toggleMenu(false)));
+    document.addEventListener('click', e => { if (drawer.classList.contains('open') && !drawer.contains(e.target) && !hamburger.contains(e.target)) toggleMenu(false); });
+  </script>
+</body>
+</html>
