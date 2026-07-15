@@ -90,8 +90,8 @@ export default function Services() {
                              ${featured ? 'text-white/60' : 'text-slate'}`}>
                 {s.body}
               </p>
-              <span className="absolute inset-x-0 bottom-0 h-[3px] bg-gradient-to-r
-                               from-gold to-goldLt scale-x-0 origin-left
+              <span className="absolute inset-x-0 bottom-0 h-[3px] bg-gold
+                               scale-x-0 origin-left
                                transition-transform duration-500
                                group-hover:scale-x-100" />
             </article>

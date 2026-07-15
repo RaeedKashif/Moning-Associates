@@ -93,8 +93,8 @@ export default function About() {
           ))}
         </div>
 
-        <a href="tel:4695809228" className="btn-outline-navy mt-8">
-          Call 469-580-9228
+        <a href="tel:+14695809228" className="btn-outline-navy mt-8">
+          Call +1 469-580-9228
           <span className="w-5 h-5 rounded-full bg-gold/15 grid place-items-center
                            text-xs">&rarr;</span>
         </a>

@@ -22,9 +22,6 @@ export default function Philosophy() {
       id="philosophy"
       className="relative bg-navy py-24 px-5 md:px-[6%] overflow-hidden"
     >
-      <div className="absolute -top-44 -right-44 w-[480px] h-[480px] rounded-full
-                      bg-gold/[0.07] blur-3xl pointer-events-none" />
-
       <div className="relative grid lg:grid-cols-[1fr_1.25fr] gap-12 lg:gap-20 items-center">
         <div className="reveal">
           <span className="text-[0.7rem] font-semibold tracking-[0.28em]
@@ -49,9 +46,9 @@ export default function Philosophy() {
             <div
               key={p.num}
               className="group relative flex gap-5 items-start
-                         p-6 md:p-7 bg-white/[0.03] border border-white/10
+                         p-6 md:p-7 bg-navy2 border border-white/10
                          rounded-2xl transition-all
-                         hover:bg-gold/[0.05] hover:border-gold/25
+                         hover:border-gold/30
                          overflow-hidden"
             >
               <span className="absolute left-0 top-0 bottom-0 w-[3px] bg-gold

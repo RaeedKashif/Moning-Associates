@@ -1,21 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { supabase } from '../lib/supabase';
 
-const ALL_CATEGORIES = [
-  'All',
-  'Alumni',
-  'Baby Boomers',
-  "Dallas Cowboy's",
-  'Health & Fitness',
-  'Lands',
-  'Local Events',
-  'News',
-  'Off Market',
-  'Property',
-  'Sports',
-  'Uncategorized',
-];
-
 export default function Blogs({ limit = null, showHeader = true }) {
   const [posts, setPosts]   = useState([]);
   const [loading, setLoading] = useState(true);
@@ -29,8 +14,8 @@ export default function Blogs({ limit = null, showHeader = true }) {
     async function fetchPosts() {
       setLoading(true);
       const { data, error } = await supabase
-        .from('blog_posts')
-        .select('*')
+        .from('blogs')
+        .select('id, slug, title, excerpt, cover_image, author, tags, published_at')
         .order('published_at', { ascending: false });
       if (error) {
         setError(error.message);
@@ -128,7 +113,9 @@ export default function Blogs({ limit = null, showHeader = true }) {
     el.scrollBy({ left: dir * step, behavior: 'smooth' });
   };
 
-  let visible = active === 'All' ? posts : posts.filter(p => p.cat === active);
+  const allCategories = ['All', ...Array.from(new Set(posts.flatMap(p => p.tags ?? []))).sort()];
+
+  let visible = active === 'All' ? posts : posts.filter(p => (p.tags ?? []).includes(active));
   if (limit) visible = visible.slice(0, limit);
 
   const formatDate = (iso) =>
@@ -190,8 +177,8 @@ export default function Blogs({ limit = null, showHeader = true }) {
                 Categories
               </span>
             </div>
-            {ALL_CATEGORIES.map(c => {
-              const count = c === 'All' ? posts.length : posts.filter(p => p.cat === c).length;
+            {allCategories.map(c => {
+              const count = c === 'All' ? posts.length : posts.filter(p => (p.tags ?? []).includes(c)).length;
               return (
                 <button
                   key={c}
@@ -281,61 +268,72 @@ export default function Blogs({ limit = null, showHeader = true }) {
           {visible.length === 0 && (
             <p className="col-span-3 text-center text-slate py-12">No posts in this category yet.</p>
           )}
-          {visible.map((p, i) => {
-            const href = p.slug ? `#/blog/${p.slug}` : `#/blog/${p.id}`;
-            return (
-              <a
-                key={p.id ?? p.title}
-                href={href}
-                style={{ animationDelay: `${(i % 3) * 0.08}s` }}
-                className="animate-fadeUp group block
-                           bg-white rounded-2xl border border-black/[0.06] overflow-hidden
-                           transition-all duration-500
-                           hover:-translate-y-2 hover:shadow-royal hover:border-gold/40"
-              >
-                <div className="relative aspect-[16/10] overflow-hidden kenburns-on-hover">
+          {visible.map((p, i) => (
+            <a
+              key={p.id}
+              href={`#/blog/${p.slug}`}
+              style={{ animationDelay: `${(i % 3) * 0.08}s` }}
+              className="animate-fadeUp group block
+                         bg-white rounded-2xl border border-black/[0.06] overflow-hidden
+                         transition-all duration-500
+                         hover:-translate-y-2 hover:shadow-royal hover:border-gold/40"
+            >
+              <div className="relative aspect-[16/10] overflow-hidden kenburns-on-hover">
+                {p.cover_image && (
                   <img
-                    src={p.image}
+                    src={p.cover_image}
                     alt={p.title}
                     loading="lazy"
                     className="w-full h-full object-cover"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-navy/60 via-transparent to-transparent" />
+                )}
+                <div className="absolute inset-0 bg-gradient-to-t from-navy/60 via-transparent to-transparent" />
+                {p.tags?.[0] && (
                   <span className="absolute top-4 left-4 bg-gold text-navy text-[0.7rem]
                                    font-semibold tracking-[0.16em] uppercase
                                    px-3 py-1.5 rounded-md shadow-gold">
-                    {p.cat}
+                    {p.tags[0]}
+                  </span>
+                )}
+              </div>
+              <div className="p-6 md:p-7">
+                <div className="text-muted text-[0.72rem] tracking-[0.12em] uppercase mb-3">
+                  {p.published_at ? formatDate(p.published_at) : ''}
+                </div>
+                <h3 className="font-serif text-navy text-[1.25rem] font-semibold leading-tight
+                               group-hover:text-goldDk transition-colors">
+                  {p.title}
+                </h3>
+                <p className="text-slate text-[0.9rem] leading-[1.75] mt-3 line-clamp-3">
+                  {p.excerpt}
+                </p>
+                {p.tags?.length > 1 && (
+                  <div className="flex flex-wrap gap-1.5 mt-3">
+                    {p.tags.slice(1).map(t => (
+                      <span key={t} className="text-[0.62rem] font-semibold tracking-[0.1em]
+                                               uppercase text-goldDk bg-gold/10
+                                               px-2 py-0.5 rounded-full">
+                        {t}
+                      </span>
+                    ))}
+                  </div>
+                )}
+                <div className="flex items-center justify-between mt-5 pt-5 border-t border-black/[0.06]">
+                  <div className="flex items-center gap-2">
+                    <div className="w-7 h-7 rounded-full bg-gold
+                                    grid place-items-center text-navy font-bold text-[0.7rem]">
+                      {(p.author ?? 'MA').split(' ').map(w => w[0]).join('').slice(0, 2)}
+                    </div>
+                    <span className="text-muted text-[0.78rem]">{p.author}</span>
+                  </div>
+                  <span className="text-goldDk text-[0.78rem] font-semibold tracking-wider uppercase
+                                   group-hover:translate-x-1 transition-transform">
+                    Read &rarr;
                   </span>
                 </div>
-                <div className="p-6 md:p-7">
-                  <div className="text-muted text-[0.72rem]
-                                  tracking-[0.12em] uppercase mb-3">
-                    {p.published_at ? formatDate(p.published_at) : p.date}
-                  </div>
-                  <h3 className="font-serif text-navy text-[1.25rem] font-semibold leading-tight
-                                 group-hover:text-goldDk transition-colors">
-                    {p.title}
-                  </h3>
-                  <p className="text-slate text-[0.9rem] leading-[1.75] mt-3 line-clamp-3">
-                    {p.excerpt}
-                  </p>
-                  <div className="flex items-center justify-between mt-5 pt-5 border-t border-black/[0.06]">
-                    <div className="flex items-center gap-2">
-                      <div className="w-7 h-7 rounded-full bg-gradient-to-br from-gold to-goldDk
-                                      grid place-items-center text-navy font-bold text-[0.7rem]">
-                        {(p.author ?? 'MA').split(' ').map(w => w[0]).join('').slice(0, 2)}
-                      </div>
-                      <span className="text-muted text-[0.78rem]">{p.author}</span>
-                    </div>
-                    <span className="text-goldDk text-[0.78rem] font-semibold tracking-wider uppercase
-                                     group-hover:translate-x-1 transition-transform">
-                      Read &rarr;
-                    </span>
-                  </div>
-                </div>
-              </a>
-            );
-          })}
+              </div>
+            </a>
+          ))}
         </div>
       )}
     </section>

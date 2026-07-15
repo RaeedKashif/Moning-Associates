@@ -71,7 +71,7 @@ export default function Footer() {
 
       {/* Brokered-by eXp Realty band — blends with dark theme */}
       <div className="relative overflow-hidden rounded-2xl mb-8
-                      bg-gradient-to-r from-white/[0.02] via-gold/[0.04] to-white/[0.02]
+                      bg-white/[0.03]
                       border border-gold/25 px-5 sm:px-8 py-6
                       flex flex-col md:flex-row items-start md:items-center
                       justify-between gap-5">
@@ -112,7 +112,7 @@ export default function Footer() {
           © {new Date().getFullYear()} Moning &amp; Associates. All rights reserved.
         </span>
         <span className="text-white/25 text-[0.78rem]">
-          Steven Moning · eXp Realty · 469-580-9228
+          Steven Moning · eXp Realty · +1 469-580-9228
         </span>
       </div>
     </footer>

@@ -52,8 +52,7 @@ export default function Testimonials() {
             <div className={`mt-7 pt-5 flex items-center gap-3 border-t
                              ${t.dark ? 'border-white/10' : 'border-black/[0.06]'}`}>
               <div className="w-11 h-11 rounded-full grid place-items-center
-                              font-serif font-bold text-navy
-                              bg-gradient-to-br from-gold to-goldDk">
+                              font-serif font-bold text-navy bg-gold">
                 {t.initials}
               </div>
               <div>
