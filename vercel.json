@@ -1,3 +1,9 @@
 {
-  "version": 2
+  "version": 2,
+  "rewrites": [
+    {
+      "source": "/:page(lands|luxury-properties|off-market-properties|active-listing|all-blogs).html",
+      "destination": "/"
+    }
+  ]
 }

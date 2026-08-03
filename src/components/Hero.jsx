@@ -50,7 +50,7 @@ export default function Hero() {
 
         <div className="relative mt-10 flex flex-wrap items-center gap-4
                         animate-fadeUp [animation-delay:0.3s]">
-          <a href="#contact" className="btn-gold">
+          <a href="#inquire" className="btn-gold">
             Let's Get Started
             <span className="w-5 h-5 rounded-full bg-black/10 grid place-items-center
                              text-xs">&rarr;</span>

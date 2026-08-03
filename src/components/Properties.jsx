@@ -1,12 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
+import { CATEGORIES, categoryHref } from '../lib/propertyCategories.js';
 
-const filters = [
-  { key: 'all',    label: 'All Properties' },
-  { key: 'luxury', label: 'Luxury' },
-  { key: 'active', label: 'Active Listing' },
-  { key: 'land',   label: 'Lands' },
-  { key: 'offmkt', label: 'Off Market' },
-];
+const filters = CATEGORIES.map(({ key, label }) => ({ key, label }));
 
 // Admin API that fronts the MongoDB listings (Redis-cached). Override in prod
 // with VITE_LISTINGS_API_URL if the admin app ever moves.
@@ -137,7 +132,7 @@ function PropertyCard({ p }) {
           ))}
         </dl>
 
-        <a href="#contact"
+        <a href="#inquire"
            className="mt-auto pt-4 flex items-center justify-between
                       text-gold hover:text-goldLt text-[0.76rem] font-semibold
                       tracking-[0.14em] uppercase transition-colors">
@@ -208,7 +203,7 @@ export default function Properties({ initialFilter = 'all', limit = null, showHe
   const [page, setPage] = useState(1);
   const gridTop = useRef(null);
 
-  useEffect(() => { setActive(initialFilter); }, [initialFilter]);
+  useEffect(() => { setActive(initialFilter); setPage(1); }, [initialFilter]);
 
   useEffect(() => {
     let cancelled = false;
@@ -242,11 +237,17 @@ export default function Properties({ initialFilter = 'all', limit = null, showHe
     gridTop.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
 
+  // Each category is its own route, so a pill is real navigation — that keeps the
+  // page heading, the URL, and the grid describing the same thing, and leaves a
+  // history entry so Back works.
   const selectFilter = (key) => {
-    setActive(key);
-    setPage(1);
-    const newHash = key === 'all' ? '#/properties' : `#/properties?cat=${key}`;
-    if (window.location.hash !== newHash) window.history.replaceState(null, '', newHash);
+    const href = categoryHref(key);
+    if (window.location.hash !== href) {
+      window.location.hash = href;
+    } else {
+      setActive(key);
+      setPage(1);
+    }
   };
 
   return (

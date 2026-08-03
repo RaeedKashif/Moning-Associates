@@ -1,19 +1,26 @@
 import { useEffect, useRef, useState } from 'react';
+import { CATEGORY_BY_KEY, categoryHref } from '../lib/propertyCategories.js';
+import { INQUIRY_FORMS } from '../lib/inquiryForms.js';
 
-const propertyCats = [
-  { href: '#/properties?cat=offmkt', label: 'Off Market Properties' },
-  { href: '#/properties?cat=land',   label: 'Lands' },
-  { href: '#/properties?cat=luxury', label: 'Luxury Properties' },
-  { href: '#/properties?cat=active', label: 'Active Listing' },
-  { href: '#/properties',            label: 'View All' },
-];
+// Dropdown order is its own thing — the specific categories first, "View All" last.
+const propertyCats = ['offmkt', 'land', 'luxury', 'active', 'all'].map(key => ({
+  href: categoryHref(key),
+  label: CATEGORY_BY_KEY[key].navLabel,
+}));
 
 const links = [
+  { href: '#/',          label: 'Home',         home: true    },
   { href: '#services',   label: 'Services',     anchor: true  },
   { type: 'dropdown',    label: 'All off Properties', items: propertyCats },
   { href: '#/blogs',     label: 'All Blogs',    anchor: false },
-  { href: '#team',       label: 'Team',         anchor: true  },
 ];
+
+// Back to the top of the landing page, from wherever you are.
+function goHome(e) {
+  e.preventDefault();
+  if (window.location.hash) window.location.hash = '';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
 
 // Navigate to an in-page anchor. If we're on a separate route, go home first then scroll.
 function goToAnchor(e, href) {
@@ -30,7 +37,7 @@ function goToAnchor(e, href) {
   }
 }
 
-export default function Navbar({ currentRoute = 'home' }) {
+export default function Navbar({ currentRoute = 'home', activeHref = null }) {
   const [open, setOpen]         = useState(false);
   const [solid, setSolid]       = useState(false);
   const [dropOpen, setDropOpen] = useState(false);
@@ -150,13 +157,16 @@ export default function Navbar({ currentRoute = 'home' }) {
                 </li>
               );
             }
-            const active =
-              (l.href === '#/blogs' && currentRoute === 'blogs');
+            const active = l.href === activeHref;
             return (
               <li key={l.href}>
                 <a
                   href={l.href}
-                  onClick={l.anchor ? (e) => goToAnchor(e, l.href) : undefined}
+                  onClick={
+                    l.home   ? (e) => { goHome(e); close(); }
+                  : l.anchor ? (e) => goToAnchor(e, l.href)
+                  : undefined
+                  }
                   className={`nav-link text-white/85 hover:text-gold text-[0.86rem] font-medium
                               px-3.5 py-2 rounded-md transition-colors
                               ${active ? 'text-gold active' : ''}`}
@@ -182,18 +192,26 @@ export default function Navbar({ currentRoute = 'home' }) {
               />
             </div>
           </li>
-          <li>
-            <a
-              href="#contact"
-              onClick={(e) => goToAnchor(e, '#contact')}
-              className="ml-3 inline-flex items-center gap-2
-                         bg-gold hover:bg-goldLt text-navy font-semibold text-[0.86rem]
-                         px-6 py-2.5 rounded-md transition-all duration-300
-                         hover:shadow-gold hover:-translate-y-0.5"
-            >
-              Contact Us
-            </a>
-          </li>
+          {/* The two calls to action that replaced "Contact Us" — both in gold,
+              so the choice itself is the most prominent thing in the bar. */}
+          {INQUIRY_FORMS.map((f, i) => (
+            <li key={f.key}>
+              <a
+                href={`#/${f.slug}`}
+                onClick={close}
+                aria-current={activeHref === `#/${f.slug}` ? 'page' : undefined}
+                className={`inline-flex items-center gap-2 font-semibold text-[0.86rem]
+                            px-5 py-2.5 rounded-md transition-all duration-300
+                            border-2 border-gold hover:-translate-y-0.5 hover:shadow-gold
+                            ${i === 0 ? 'ml-3' : 'ml-2'}
+                            ${activeHref === `#/${f.slug}`
+                              ? 'bg-goldLt border-goldLt text-navy'
+                              : 'bg-gold text-navy hover:bg-goldLt hover:border-goldLt'}`}
+              >
+                {f.navLabel}
+              </a>
+            </li>
+          ))}
         </ul>
 
         <button
@@ -255,7 +273,8 @@ export default function Navbar({ currentRoute = 'home' }) {
                 key={l.href}
                 href={l.href}
                 onClick={(e) => {
-                  if (l.anchor) goToAnchor(e, l.href);
+                  if (l.home) goHome(e);
+                  else if (l.anchor) goToAnchor(e, l.href);
                   close();
                 }}
                 className="block text-white hover:text-gold text-xl font-medium
@@ -265,14 +284,19 @@ export default function Navbar({ currentRoute = 'home' }) {
               </a>
             );
           })}
-          <a
-            href="#contact"
-            onClick={(e) => { goToAnchor(e, '#contact'); close(); }}
-            className="mt-6 bg-gold hover:bg-goldLt text-navy font-semibold text-center
-                       px-6 py-4 rounded-xl text-base hover:shadow-gold transition"
-          >
-            Contact Us &rarr;
-          </a>
+          <div className="mt-6 grid gap-3">
+            {INQUIRY_FORMS.map(f => (
+              <a
+                key={f.key}
+                href={`#/${f.slug}`}
+                onClick={close}
+                className="bg-gold hover:bg-goldLt text-navy font-semibold text-center
+                           px-6 py-4 rounded-xl text-base hover:shadow-gold transition"
+              >
+                {f.toggleLabel} &rarr;
+              </a>
+            ))}
+          </div>
 
           <div className="mt-8 pt-6 border-t border-gold/20">
             <p className="text-gold/80 text-xs tracking-[0.18em] uppercase mb-2">

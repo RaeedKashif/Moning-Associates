@@ -1,6 +1,10 @@
 import Properties from './Properties.jsx';
+import { CATEGORY_BY_KEY } from '../lib/propertyCategories.js';
 
 export default function PropertiesPage({ initialFilter = 'all' }) {
+  const cat = CATEGORY_BY_KEY[initialFilter] || CATEGORY_BY_KEY.all;
+  const { hero, cta } = cat;
+
   return (
     <main className="pt-[76px]">
       {/* Page hero */}
@@ -11,19 +15,18 @@ export default function PropertiesPage({ initialFilter = 'all' }) {
           <div className="flex items-center justify-center gap-3 mb-5 animate-fadeUp">
             <span className="h-px w-12 bg-gradient-to-r from-transparent via-gold to-gold" />
             <span className="text-[0.72rem] font-semibold tracking-[0.32em] uppercase text-gold">
-              The Portfolio
+              {hero.tag}
             </span>
             <span className="h-px w-12 bg-gradient-to-r from-gold via-gold to-transparent" />
           </div>
           <h1 className="font-serif font-semibold leading-[1.05]
                          text-[clamp(2.4rem,5vw,4.4rem)] text-white animate-fadeUp [animation-delay:0.1s]">
-            All <span className="italic gold-foil">Properties</span>
+            {hero.titleLead}
+            {hero.titleAccent && <> <span className="italic gold-foil">{hero.titleAccent}</span></>}
           </h1>
           <p className="text-white/70 text-[clamp(0.95rem,1.4vw,1.1rem)] leading-[1.85] max-w-2xl mx-auto mt-6
                         animate-fadeUp [animation-delay:0.2s]">
-            Land is where the real deals get made in DFW. These are the parcels we're
-            working right now — some just hit the MLS, and some you won't find
-            anywhere but here.
+            {hero.blurb}
           </p>
 
           <div className="royal-divider mt-8 animate-fadeUp [animation-delay:0.3s]">
@@ -54,15 +57,14 @@ export default function PropertiesPage({ initialFilter = 'all' }) {
       <section className="bg-navy2 px-5 md:px-[6%] py-16 border-t border-gold/15">
         <div className="max-w-4xl mx-auto text-center">
           <h3 className="font-serif text-white text-[clamp(1.5rem,3vw,2.4rem)] font-semibold mb-4">
-            Hunting for something <span className="italic gold-foil">specific?</span>
+            {cta.headingLead} <span className="italic gold-foil">{cta.headingAccent}</span>
           </h3>
           <p className="text-white/65 leading-[1.8] mb-8 max-w-2xl mx-auto">
-            A lot of our best deals never make it to the MLS. Tell us what you're
-            looking for and we'll quietly put together a private shortlist for you.
+            {cta.blurb}
           </p>
-          <a href="#/" onClick={(e) => { e.preventDefault(); window.location.hash = ''; setTimeout(() => document.getElementById('contact')?.scrollIntoView({behavior: 'smooth'}), 80); }}
+          <a href="#/" onClick={(e) => { e.preventDefault(); window.location.hash = ''; setTimeout(() => document.getElementById('inquire')?.scrollIntoView({behavior: 'smooth'}), 80); }}
              className="btn-gold inline-flex">
-            Request a Private List
+            {cta.button}
             <span className="w-5 h-5 rounded-full bg-black/10 grid place-items-center text-xs">&rarr;</span>
           </a>
         </div>
