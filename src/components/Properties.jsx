@@ -173,18 +173,21 @@ function PropertyCard({ p }) {
   );
 }
 
-// One row of filter pills. Both levels use the same pills — the caption and the
-// indent on the second row are what say which one sits under the other.
+// One row of filter pills. Both levels use the same pills; the caption sits in
+// a fixed column so both rows of pills share one left edge — stacked rows that
+// start at different x read as a mistake rather than as a hierarchy.
 function FilterRow({ caption, options, active, countFor, onSelect }) {
   return (
-    <div>
-      <span className="block text-[0.62rem] font-semibold tracking-[0.24em]
-                       uppercase text-white/35 mb-2.5">
+    <div className="grid gap-x-6 gap-y-3 px-4 py-4 md:px-6 md:py-5
+                    sm:grid-cols-[7.5rem_minmax(0,1fr)] sm:items-center">
+      <span className="text-[0.62rem] font-semibold tracking-[0.22em]
+                       uppercase text-white/40 leading-snug">
         {caption}
       </span>
-      <div className="flex flex-wrap gap-2 md:gap-3">
+      <div className="flex flex-wrap gap-2 md:gap-2.5">
         {options.map(o => {
           const on = active === o.key;
+          const count = countFor(o.key);
           return (
             <button
               key={o.key}
@@ -195,12 +198,13 @@ function FilterRow({ caption, options, active, countFor, onSelect }) {
                           tracking-[0.12em] uppercase border transition-colors whitespace-nowrap
                           ${on
                             ? 'bg-gold text-navy border-gold'
-                            : 'bg-navy2 text-white border-gold/40 hover:border-gold'}`}
+                            : 'bg-navy2 text-white border-gold/40 hover:border-gold'}
+                          ${!on && count === 0 ? 'opacity-55 hover:opacity-100' : ''}`}
             >
               {o.label}
               <span className={`text-[0.65rem] font-bold rounded-full px-1.5 py-0.5 leading-none
                                 ${on ? 'bg-navy/15 text-navy' : 'bg-gold/20 text-gold'}`}>
-                {countFor(o.key)}
+                {count}
               </span>
             </button>
           );
@@ -332,9 +336,12 @@ export default function Properties({
   const countByType = (key) => properties.filter(p => matches(p, key, channel)).length;
   const countByChannel = (key) => properties.filter(p => matches(p, type, key)).length;
 
+  // Without its own header this sits directly under the page hero, which has
+  // already paid for the space above — so only the bottom padding is full.
   return (
-    <section id="properties" className="relative bg-navy
-                                        py-16 md:py-24 px-5 md:px-[6%] overflow-hidden">
+    <section id="properties"
+             className={`relative bg-navy px-5 md:px-[6%] overflow-hidden
+                         ${showHeader ? 'py-16 md:py-24' : 'pt-8 md:pt-10 pb-16 md:pb-24'}`}>
       <div className="pointer-events-none absolute inset-0 pattern-crown opacity-40" />
 
       {showHeader && (
@@ -355,9 +362,12 @@ export default function Properties({
         </div>
       )}
 
-      {/* Two levels: what the property is, then how it sells. The second row is
-          indented under the first because it filters within that choice. */}
-      <div ref={gridTop} className="relative reveal mb-6 scroll-mt-28 flex flex-col gap-5">
+      {/* Two levels: what the property is, then how it sells. One panel with a
+          rule between them, so they read as a single control rather than two
+          loose rows of pills floating on the page. */}
+      <div ref={gridTop}
+           className="relative reveal mb-6 scroll-mt-28 rounded-xl
+                      border border-gold/20 divide-y divide-gold/15">
         <FilterRow
           caption="Property type"
           options={typeFilters}
@@ -365,15 +375,13 @@ export default function Properties({
           countFor={countByType}
           onSelect={(key) => goTo(key, channel)}
         />
-        <div className="pl-4 md:pl-5 border-l border-gold/25">
-          <FilterRow
-            caption="How it sells"
-            options={channelFilters}
-            active={channel}
-            countFor={countByChannel}
-            onSelect={(key) => goTo(type, key)}
-          />
-        </div>
+        <FilterRow
+          caption="How it sells"
+          options={channelFilters}
+          active={channel}
+          countFor={countByChannel}
+          onSelect={(key) => goTo(type, key)}
+        />
       </div>
 
       <div className="relative text-white/55 text-[0.78rem] mb-6">

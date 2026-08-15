@@ -6,8 +6,11 @@ export default function PropertiesPage({ type = 'all', channel = 'all' }) {
 
   return (
     <main className="pt-[76px]">
-      {/* Page hero */}
-      <section className="relative bg-navy overflow-hidden px-5 md:px-[6%] py-14 md:py-28">
+      {/* Page hero. The bottom padding is deliberately shorter than the top —
+          the filters sit directly underneath and the two sections were stacking
+          their full padding into a dead band of navy. */}
+      <section className="relative bg-navy overflow-hidden px-5 md:px-[6%]
+                          pt-14 md:pt-24 pb-10 md:pb-14">
         <div className="pointer-events-none absolute inset-0 pattern-crown opacity-40" />
 
         <div className="relative max-w-4xl mx-auto text-center">

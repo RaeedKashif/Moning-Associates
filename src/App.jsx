@@ -143,7 +143,11 @@ export default function App() {
           io.unobserve(e.target);
         }
       }),
-      { threshold: 0.12, rootMargin: '0px 0px -40px 0px' }
+      // Reveal as soon as the top edge is properly into the viewport, rather
+      // than on a fraction of the element. A fraction cannot work for anything
+      // taller than the screen — the buyer intake runs to 3600px, so 12% of it
+      // never fits, and the whole form sat at opacity 0 until you scrolled.
+      { threshold: 0, rootMargin: '0px 0px -80px 0px' }
     );
     els.forEach(el => io.observe(el));
     return () => io.disconnect();

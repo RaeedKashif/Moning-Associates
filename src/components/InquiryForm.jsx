@@ -298,7 +298,7 @@ export default function InquiryForm({ config }) {
 
           <legend className="w-full">
             <span className="flex items-center gap-3 mb-5">
-              <span className="font-serif text-gold/45 text-[0.95rem] tabular-nums leading-none">
+              <span className="font-serif text-gold/60 text-[0.95rem] tabular-nums leading-none">
                 {String(i + 1).padStart(2, '0')}
               </span>
               <span className="text-[0.7rem] font-semibold tracking-[0.24em]
@@ -383,18 +383,21 @@ function Field({ field, value, error, onChange }) {
   );
   // Two fields sharing a row rarely have labels of the same length, and a label
   // that wraps would otherwise drop its input half a line below its neighbour.
-  // Reserving two lines on the paired fields keeps every input on one baseline.
-  const labelClass = 'block text-[0.82rem] font-medium text-white/70 leading-snug mb-2'
-    + (half ? ' sm:min-h-[2.4rem]' : '');
+  // The label box grows to fill the row and sits its text at the bottom, so a
+  // label always hugs its own input and the slack from a taller neighbour falls
+  // above it rather than between the two.
+  const labelBase = 'text-[0.82rem] font-medium text-white/70 leading-snug mb-2';
 
   return (
-    <div className={half ? '' : 'sm:col-span-2'}>
+    <div className={`flex flex-col ${half ? '' : 'sm:col-span-2'}`}>
       {field.type === 'radio' ? (
         <RadioGroup field={field} value={value} error={error} errorId={errorId}
-                    onChange={onChange} labelClass={labelClass} label={label} />
+                    onChange={onChange} labelClass={`block ${labelBase}`} label={label} />
       ) : (
         <>
-          <label htmlFor={id} className={labelClass}>{label}</label>
+          <label htmlFor={id} className={`flex flex-1 items-end ${labelBase}`}>
+            <span>{label}</span>
+          </label>
           {field.type === 'file' ? (
             <FileInput field={field} id={id} value={value} error={error}
                        errorId={errorId} onChange={onChange} />
