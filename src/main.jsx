@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App.jsx';
 import './index.css';
-import { CATEGORY_BY_SLUG } from './lib/propertyCategories.js';
+import { LISTING_SLUGS } from './lib/propertyCategories.js';
 
 // The property and blog pages used to be standalone .html files. Anyone still
 // holding one of those links gets sent to the React route that replaced it.
@@ -11,7 +11,7 @@ function redirectLegacyPath() {
   if (!match) return false;
 
   const slug = match[1];
-  const target = CATEGORY_BY_SLUG[slug] ? `/${slug}`
+  const target = LISTING_SLUGS.has(slug) ? `/${slug}`
     : slug === 'all-blogs' ? '/blogs'
     : null;
   if (!target) return false;

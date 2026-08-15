@@ -1,17 +1,37 @@
 import { useEffect, useRef, useState } from 'react';
-import { CATEGORY_BY_KEY, categoryHref } from '../lib/propertyCategories.js';
+import { TYPE_BY_KEY, CHANNEL_BY_KEY, listingHref } from '../lib/propertyCategories.js';
 import { INQUIRY_FORMS } from '../lib/inquiryForms.js';
 
-// Dropdown order is its own thing — the specific categories first, "View All" last.
-const propertyCats = ['offmkt', 'land', 'luxury', 'active', 'all'].map(key => ({
-  href: categoryHref(key),
-  label: CATEGORY_BY_KEY[key].navLabel,
+// The menu mirrors how listings are actually filed: what a property is on the
+// top line, how it sells underneath it. Order is its own thing — the specific
+// types first, "View All" last.
+const CHANNEL_KEYS = ['on_market', 'off_market', 'wholesale'];
+
+const propertyCats = ['land', 'luxury', 'dorms', 'all'].map(key => ({
+  key,
+  href: listingHref(key),
+  label: TYPE_BY_KEY[key].navLabel,
+  // Every type carries every channel, so each one can be narrowed in place.
+  channels: CHANNEL_KEYS.map(c => ({
+    key: c,
+    href: listingHref(key, c),
+    label: CHANNEL_BY_KEY[c].pillLabel,
+  })),
+}));
+
+// The same three channels across every type — the pages the site has always
+// published at their own URLs.
+const propertyChannels = CHANNEL_KEYS.map(key => ({
+  key,
+  href: listingHref('all', key),
+  label: CHANNEL_BY_KEY[key].navLabel,
 }));
 
 const links = [
   { href: '#/',          label: 'Home',         home: true    },
   { href: '#services',   label: 'Services',     anchor: true  },
-  { type: 'dropdown',    label: 'All off Properties', items: propertyCats },
+  { type: 'dropdown',    label: 'All off Properties',
+    items: propertyCats, channels: propertyChannels },
   { href: '#/blogs',     label: 'All Blogs',    anchor: false },
 ];
 
@@ -133,24 +153,49 @@ export default function Navbar({ currentRoute = 'home', activeHref = null }) {
                     </svg>
                   </button>
                   {dropOpen && (
-                    <div className="absolute top-full right-0 mt-2 w-[260px] dropdown-enter">
+                    <div className="absolute top-full right-0 mt-2 w-[300px] dropdown-enter">
                       <div className="bg-navy rounded-xl border border-gold/40
                                       shadow-royal overflow-hidden">
                         <div className="h-[2px] bg-gradient-to-r from-transparent via-gold to-transparent" />
                         {l.items.map(i => (
-                          <a key={i.label}
-                             href={i.href}
-                             onClick={close}
-                             className="flex items-center justify-between gap-3
-                                        px-5 py-3.5 text-white text-[0.86rem]
-                                        hover:bg-gold hover:text-navy transition-all
-                                        border-b border-gold/15 last:border-b-0
-                                        group">
-                            <span>{i.label}</span>
-                            <span className="text-gold/60 group-hover:text-navy
-                                             group-hover:translate-x-1 transition-all">→</span>
-                          </a>
+                          <div key={i.key} className="border-b border-gold/15 last:border-b-0">
+                            <a href={i.href}
+                               onClick={close}
+                               className="flex items-center justify-between gap-3
+                                          px-5 pt-3.5 pb-2 text-white text-[0.86rem]
+                                          hover:text-gold transition-colors group">
+                              <span>{i.label}</span>
+                              <span className="text-gold/60 group-hover:text-gold
+                                               group-hover:translate-x-1 transition-all">→</span>
+                            </a>
+                            {/* How each type sells — the second level, in place. */}
+                            <div className="flex flex-wrap gap-x-3 gap-y-1 px-5 pb-3">
+                              {i.channels.map(c => (
+                                <a key={c.key} href={c.href} onClick={close}
+                                   className="text-white/45 hover:text-gold text-[0.74rem]
+                                              transition-colors">
+                                  {c.label}
+                                </a>
+                              ))}
+                            </div>
+                          </div>
                         ))}
+
+                        <div className="bg-navy2 px-5 py-3.5 border-t border-gold/25">
+                          <span className="block text-[0.6rem] font-semibold tracking-[0.2em]
+                                           uppercase text-gold/70 mb-2">
+                            Across every type
+                          </span>
+                          <div className="flex flex-col gap-1.5">
+                            {l.channels.map(c => (
+                              <a key={c.key} href={c.href} onClick={close}
+                                 className="text-white/70 hover:text-gold text-[0.8rem]
+                                            transition-colors">
+                                {c.label}
+                              </a>
+                            ))}
+                          </div>
+                        </div>
                       </div>
                     </div>
                   )}
@@ -254,15 +299,40 @@ export default function Navbar({ currentRoute = 'home', activeHref = null }) {
                     </svg>
                   </button>
                   {mobileDrop && (
-                    <div className="pl-4 pb-3 flex flex-col gap-1">
+                    <div className="pl-4 pb-4 flex flex-col gap-3">
                       {l.items.map(i => (
-                        <a key={i.label}
-                           href={i.href}
-                           onClick={close}
-                           className="text-white/80 hover:text-gold text-base py-2 transition-colors">
-                          · {i.label}
-                        </a>
+                        <div key={i.key}>
+                          <a href={i.href}
+                             onClick={close}
+                             className="block text-white/85 hover:text-gold text-base
+                                        py-1.5 transition-colors">
+                            · {i.label}
+                          </a>
+                          <div className="flex flex-wrap gap-x-4 gap-y-1 pl-4">
+                            {i.channels.map(c => (
+                              <a key={c.key} href={c.href} onClick={close}
+                                 className="text-white/45 hover:text-gold text-sm py-1
+                                            transition-colors">
+                                {c.label}
+                              </a>
+                            ))}
+                          </div>
+                        </div>
                       ))}
+
+                      <div className="pt-3 mt-1 border-t border-white/[0.08]">
+                        <span className="block text-[0.6rem] font-semibold tracking-[0.2em]
+                                         uppercase text-gold/70 mb-2">
+                          Across every type
+                        </span>
+                        {l.channels.map(c => (
+                          <a key={c.key} href={c.href} onClick={close}
+                             className="block text-white/70 hover:text-gold text-[0.95rem]
+                                        py-1.5 transition-colors">
+                            {c.label}
+                          </a>
+                        ))}
+                      </div>
                     </div>
                   )}
                 </div>

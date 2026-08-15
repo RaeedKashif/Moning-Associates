@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import InquiryForm from './InquiryForm.jsx';
 import InquiryToggle from './InquiryToggle.jsx';
 import { BUYER } from '../lib/inquiryForms.js';
 
@@ -42,9 +41,9 @@ export default function Inquire() {
           <em className="not-italic text-gold">Tell us which.</em>
         </h2>
         <p className="text-white/55 text-[0.96rem] leading-[1.8] max-w-md mb-8">
-          Two questions in and we already know how to help you. Pick the one that
-          fits, answer a few things, and Steven will come back to you within one
-          business day — with something useful, not a sales pitch.
+          Pick the side you are on and answer the intake. It takes about five
+          minutes, and it is what lets Steven come back to you within one business
+          day with something useful instead of a discovery call.
         </p>
 
         <ul className="flex flex-col gap-4 mb-10">
@@ -74,27 +73,39 @@ export default function Inquire() {
           ))}
         </ul>
 
-        <div className="pt-7 border-t border-gold/15">
-          <p className="text-white/45 text-[0.86rem] leading-[1.7]">
-            Prefer the full page?{' '}
-            <a href={`#/${form.slug}`}
-               className="text-gold hover:text-goldLt underline underline-offset-4">
-              Open the {form.key} form on its own
-            </a>
-            .
-          </p>
-        </div>
       </div>
 
-      {/* Right: choose, then fill */}
+      {/* Right: choose a side, then go to the form on its own page. The intake
+          runs to thirty questions — long enough that it earns its own URL
+          rather than burying the rest of the homepage underneath it. */}
       <div className="relative reveal d2">
-        <InquiryToggle
-          value={form.key}
-          onSelect={setForm}
-          className="mb-5"
-        />
-        {/* Remounting on change clears any half-typed answers from the other form. */}
-        <InquiryForm key={form.key} config={form} />
+        <InquiryToggle value={form.key} onSelect={setForm} className="mb-5" />
+
+        <div className="glass-card p-7 sm:p-9">
+          <p className="text-white/60 text-[0.95rem] leading-[1.8]">
+            {form.homeBlurb}
+          </p>
+
+          <ul className="flex flex-col gap-3 my-7">
+            {form.reassurance.points.slice(0, 3).map(p => (
+              <li key={p} className="flex gap-3.5">
+                <span className="mt-2 w-1.5 h-1.5 rotate-45 bg-gold shrink-0" aria-hidden="true" />
+                <span className="text-white/55 text-[0.9rem] leading-[1.7]">{p}</span>
+              </li>
+            ))}
+          </ul>
+
+          <a href={`#/${form.slug}`} className="btn-gold w-full justify-center">
+            {form.homeCta}
+            <span className="w-5 h-5 rounded-full bg-black/10 grid place-items-center text-xs">
+              &rarr;
+            </span>
+          </a>
+
+          <p className="text-white/35 text-xs text-center mt-4 leading-relaxed">
+            About five minutes. Nothing is shared, and nothing goes on a list.
+          </p>
+        </div>
       </div>
     </section>
   );

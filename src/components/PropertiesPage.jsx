@@ -1,9 +1,8 @@
 import Properties from './Properties.jsx';
-import { CATEGORY_BY_KEY } from '../lib/propertyCategories.js';
+import { pageCopy } from '../lib/propertyCategories.js';
 
-export default function PropertiesPage({ initialFilter = 'all' }) {
-  const cat = CATEGORY_BY_KEY[initialFilter] || CATEGORY_BY_KEY.all;
-  const { hero, cta } = cat;
+export default function PropertiesPage({ type = 'all', channel = 'all' }) {
+  const { hero, cta } = pageCopy(type, channel);
 
   return (
     <main className="pt-[76px]">
@@ -51,7 +50,7 @@ export default function PropertiesPage({ initialFilter = 'all' }) {
         </div>
       </section>
 
-      <Properties initialFilter={initialFilter} showHeader={false} />
+      <Properties initialType={type} initialChannel={channel} showHeader={false} />
 
       {/* CTA strip */}
       <section className="bg-navy2 px-5 md:px-[6%] py-16 border-t border-gold/15">

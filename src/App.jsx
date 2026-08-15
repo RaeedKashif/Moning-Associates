@@ -14,11 +14,24 @@ import PropertiesPage from './components/PropertiesPage.jsx';
 import BlogsPage      from './components/BlogsPage.jsx';
 import BlogPostPage   from './components/BlogPostPage.jsx';
 import InquiryPage    from './components/InquiryPage.jsx';
-import { CATEGORY_BY_KEY, CATEGORY_BY_SLUG } from './lib/propertyCategories.js';
+import { TYPE_BY_KEY, CHANNEL_BY_KEY, resolveListingPath, pageCopy } from './lib/propertyCategories.js';
 import { FORM_BY_SLUG } from './lib/inquiryForms.js';
 
 const HOME_TITLE = 'Moning & Associates · Steven Moning — DFW Real Estate';
 const BLOGS_TITLE = 'All Blogs | Moning & Associates';
+
+// `?cat=` predates the split into type and channel, so two of its values named
+// a sales channel rather than a property type. Translate rather than drop them.
+const LEGACY_CAT = {
+  active: { channel: 'on_market' },
+  offmkt: { channel: 'off_market' },
+};
+
+function catParam(cat) {
+  if (!cat) return {};
+  if (LEGACY_CAT[cat]) return LEGACY_CAT[cat];
+  return TYPE_BY_KEY[cat] ? { type: cat } : {};
+}
 
 function parseRoute(hash) {
   const h = (hash || '').replace(/^#/, '');
@@ -26,13 +39,18 @@ function parseRoute(hash) {
   const [rawPath, query] = h.replace(/\.html$/, '').split('?');
   const path = rawPath.replace(/^\//, '');
 
-  if (path === 'properties') {
-    const cat = new URLSearchParams(query || '').get('cat');
-    const filter = CATEGORY_BY_KEY[cat] ? cat : 'all';
-    return { name: 'properties', filter };
-  }
-  if (CATEGORY_BY_SLUG[path]) {
-    return { name: 'properties', filter: CATEGORY_BY_SLUG[path].key };
+  // Listings hang off two axes — property type and sales channel — so a route
+  // is `#/<type>` , `#/<channel>` , or `#/<type>/<channel>`. The `?cat=` and
+  // `?channel=` query form still works for links already out in the world.
+  const listing = resolveListingPath(path);
+  if (listing) {
+    const params = new URLSearchParams(query || '');
+    return {
+      name: 'properties',
+      ...listing,
+      ...catParam(params.get('cat')),
+      ...(CHANNEL_BY_KEY[params.get('channel')] ? { channel: params.get('channel') } : {}),
+    };
   }
   if (FORM_BY_SLUG[path]) {
     return { name: 'inquiry', form: path };
@@ -51,7 +69,7 @@ function parseRoute(hash) {
 // document serves them all. A single post titles itself once it has loaded.
 function titleFor(route) {
   if (route.name === 'properties') {
-    return (CATEGORY_BY_KEY[route.filter] || CATEGORY_BY_KEY.all).title;
+    return pageCopy(route.type, route.channel).title;
   }
   if (route.name === 'inquiry') return FORM_BY_SLUG[route.form].title;
   if (route.name === 'blogs') return BLOGS_TITLE;
@@ -113,7 +131,7 @@ export default function App() {
   useEffect(() => {
     const title = titleFor(route);
     if (title) document.title = title;
-  }, [route.name, route.filter]);
+  }, [route.name, route.type, route.channel]);
 
   // Scroll reveal observer — re-arm whenever route changes
   useEffect(() => {
@@ -134,7 +152,7 @@ export default function App() {
   return (
     <>
       <Navbar currentRoute={route.name} activeHref={activeHref(route)} />
-      {route.name === 'properties' && <PropertiesPage initialFilter={route.filter} />}
+      {route.name === 'properties' && <PropertiesPage type={route.type} channel={route.channel} />}
       {route.name === 'inquiry'    && <InquiryPage config={FORM_BY_SLUG[route.form]} />}
       {route.name === 'blogs'      && <BlogsPage />}
       {route.name === 'blog'       && <BlogPostPage slug={route.slug} />}

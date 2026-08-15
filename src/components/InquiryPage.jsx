@@ -45,8 +45,9 @@ export default function InquiryPage({ config }) {
                           border-t border-gold/15
                           grid lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1fr)]
                           gap-10 lg:gap-16 items-start">
-        {/* Left: what to expect */}
-        <div className="reveal">
+        {/* Left: what to expect. Sticky, because the intake is long enough that
+            you would otherwise scroll past this in the first second. */}
+        <div className="reveal lg:sticky lg:top-24">
           <h2 className="font-serif text-white text-[clamp(1.4rem,2.6vw,2rem)]
                          font-semibold mb-6">
             {reassurance.heading}
