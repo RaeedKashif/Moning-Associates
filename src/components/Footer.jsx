@@ -4,8 +4,13 @@ const links = [
   { href: '#team',       label: 'Team' },
   { href: '#/buyers',    label: 'Buyers' },
   { href: '#/sellers',   label: 'Sellers' },
-  { href: '/privacy',    label: 'Privacy Policy' },
-  { href: '/terms',      label: 'Terms and Conditions' },
+];
+
+// Kept out of the nav row above so the legal pages sit together on the
+// bottom bar, where people expect to find them.
+const legal = [
+  { href: '/privacy', label: 'Privacy Policy' },
+  { href: '/terms',   label: 'Terms and Conditions' },
 ];
 
 const socials = [
@@ -114,9 +119,19 @@ export default function Footer() {
         <span className="text-white/25 text-[0.78rem]">
           © {new Date().getFullYear()} Moning &amp; Associates. All rights reserved.
         </span>
-        <span className="text-white/25 text-[0.78rem]">
-          Steven Moning · eXp Realty · +1 469-580-9228
-        </span>
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-1
+                        md:justify-end">
+          {legal.map(l => (
+            <a key={l.href} href={l.href}
+               className="text-white/45 hover:text-gold text-[0.78rem] transition-colors">
+              {l.label}
+            </a>
+          ))}
+          <span className="hidden md:inline text-white/15">·</span>
+          <span className="text-white/25 text-[0.78rem]">
+            Steven Moning · eXp Realty · 469-580-9228
+          </span>
+        </div>
       </div>
     </footer>
   );

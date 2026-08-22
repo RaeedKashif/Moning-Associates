@@ -9,8 +9,10 @@ const I = (p) => (
 );
 
 const info = [
-  { label: 'Phone', value: '+1 469-580-9228', href: 'tel:+14695809228',
+  { label: 'General Inquiries (Call or Text)', value: '469-580-9228', href: 'tel:+14695809228',
     icon: I(<path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.38 2 2 0 0 1 3.6 1h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.75A16 16 0 0 0 16 16.84l.95-.96a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/>) },
+  { label: 'Property Deals & Acquisitions (Text)', value: '469-672-9892', href: 'sms:+14696729892',
+    icon: I(<path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/>) },
   { label: 'Email', value: 'steven.moning@exprealty.com', href: 'mailto:steven.moning@exprealty.com',
     icon: I(<><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></>) },
   { label: 'Office Hours', value: 'Mon – Fri, 9:00 AM – 5:00 PM', href: null,
