@@ -62,6 +62,11 @@ export default function BlogPostPage({ slug }) {
     return () => { cancelled = true; };
   }, [slug]);
 
+  // App titles every other route; a post can only title itself once it loads.
+  useEffect(() => {
+    if (post?.title) document.title = `${post.title} | Moning & Associates`;
+  }, [post]);
+
   if (loading) {
     return (
       <main className="pt-[76px] min-h-screen bg-cream">
@@ -230,7 +235,7 @@ export default function BlogPostPage({ slug }) {
               onClick={(e) => {
                 e.preventDefault();
                 window.location.hash = '';
-                setTimeout(() => document.getElementById('contact')
+                setTimeout(() => document.getElementById('inquire')
                   ?.scrollIntoView({ behavior: 'smooth' }), 80);
               }}
               className="btn-gold inline-flex"

@@ -2,7 +2,8 @@ const links = [
   { href: '#services',   label: 'Services' },
   { href: '#about',      label: 'About' },
   { href: '#team',       label: 'Team' },
-  { href: '#contact',    label: 'Contact' },
+  { href: '#/buyers',    label: 'Buyers' },
+  { href: '#/sellers',   label: 'Sellers' },
   { href: '/privacy',    label: 'Privacy Policy' },
   { href: '/terms',      label: 'Terms and Conditions' },
 ];

@@ -59,7 +59,7 @@ export default function BlogsPage() {
             One short market note a month — no fluff, no spam. Just the stuff we
             genuinely think DFW buyers, sellers, and investors ought to know.
           </p>
-          <a href="#/" onClick={(e) => { e.preventDefault(); window.location.hash = ''; setTimeout(() => document.getElementById('contact')?.scrollIntoView({behavior: 'smooth'}), 80); }}
+          <a href="#/" onClick={(e) => { e.preventDefault(); window.location.hash = ''; setTimeout(() => document.getElementById('inquire')?.scrollIntoView({behavior: 'smooth'}), 80); }}
              className="btn-gold inline-flex">
             Subscribe to Updates
             <span className="w-5 h-5 rounded-full bg-black/10 grid place-items-center text-xs">&rarr;</span>

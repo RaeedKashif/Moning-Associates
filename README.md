@@ -41,7 +41,8 @@ steven_moning/
 │   │   ├── Testimonials.jsx
 │   │   └── Ticker.jsx
 │   ├── lib/
-│   │   └── supabase.js     (Supabase client)
+│   │   ├── propertyCategories.js  (routes, nav labels, and copy per category)
+│   │   └── supabase.js           (Supabase client)
 │   ├── App.jsx
 │   ├── index.css
 │   └── main.jsx
@@ -105,13 +106,26 @@ vercel --prod   # redeploy to pick up the change
 
 The app uses a lightweight hash router (no react-router):
 
-| Route                  | Component         | Purpose                              |
-|------------------------|-------------------|--------------------------------------|
-| `#/`                   | `Home`            | Landing page (Hero, Services, etc.)  |
-| `#/properties`         | `PropertiesPage`  | Property listings + category filter  |
-| `#/properties?cat=...` | `PropertiesPage`  | Filtered by `offmkt` / `land` / etc. |
-| `#/blogs`              | `BlogsPage`       | Blog index with category pills       |
-| `#/blog/<slug>`        | `BlogPostPage`    | Individual blog post (full reader)   |
+| Route                        | Component        | Purpose                              |
+|------------------------------|------------------|--------------------------------------|
+| `#/`                         | `Home`           | Landing page (Hero, Services, etc.)  |
+| `#/properties`               | `PropertiesPage` | All listings + category filter        |
+| `#/off-market-properties`    | `PropertiesPage` | Off-market listings                   |
+| `#/lands`                    | `PropertiesPage` | Land and lots                         |
+| `#/luxury-properties`        | `PropertiesPage` | Luxury listings                       |
+| `#/active-listing`           | `PropertiesPage` | Active MLS listings                   |
+| `#/blogs`                    | `BlogsPage`      | Blog index with category pills        |
+| `#/blog/<slug>`              | `BlogPostPage`   | Individual blog post (full reader)    |
+
+Each property category is a real route with its own heading, intro, closing CTA,
+and `<title>` — all defined in one place, `src/lib/propertyCategories.js`, which
+also feeds the navbar dropdown and the filter pills. Clicking a filter pill
+navigates to that category's route rather than only filtering in place.
+
+These pages used to be standalone `.html` files at the site root. Old links still
+work: `#/properties?cat=land` and `#/lands.html` both resolve to `#/lands`, and a
+request for `/lands.html` is rewritten to the app (`vercel.json`) then redirected
+by `src/main.jsx`. `#/all-blogs` resolves to `#/blogs`.
 
 ---
 
