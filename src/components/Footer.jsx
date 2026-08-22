@@ -111,8 +111,13 @@ export default function Footer() {
         <span className="text-white/25 text-[0.78rem]">
           © {new Date().getFullYear()} Moning &amp; Associates. All rights reserved.
         </span>
-        <span className="text-white/25 text-[0.78rem]">
-          Steven Moning · eXp Realty · +1 469-580-9228
+        <span className="text-white/25 text-[0.78rem] flex items-center gap-4">
+          <span>Steven Moning · eXp Realty · +1 469-580-9228</span>
+          <span className="flex items-center gap-3">
+            <a href="/privacy" className="hover:text-gold transition-colors">Privacy Policy</a>
+            <span className="text-white/15">·</span>
+            <a href="/terms" className="hover:text-gold transition-colors">Terms and Conditions</a>
+          </span>
         </span>
       </div>
     </footer>
