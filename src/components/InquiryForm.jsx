@@ -362,6 +362,14 @@ export default function InquiryForm({ config }) {
 
         <p className="text-white/35 text-xs text-center mt-4 leading-relaxed">
           We use this to answer your enquiry, nothing else. No lists, no spam.
+          {' '}By sending this you agree to our{' '}
+          <a href="/privacy" className="text-white/55 hover:text-gold underline underline-offset-2 transition-colors">
+            Privacy Policy
+          </a>
+          {' '}and{' '}
+          <a href="/terms" className="text-white/55 hover:text-gold underline underline-offset-2 transition-colors">
+            Terms and Conditions
+          </a>.
         </p>
       </div>
     </form>
