@@ -8,16 +8,17 @@ const filters = [
   { key: 'offmkt', label: 'Off Market' },
 ];
 
-// Admin API that fronts the MongoDB listings (Redis-cached). Override in prod
-// with VITE_LISTINGS_API_URL if the admin app ever moves.
-const API_BASE = import.meta.env.VITE_LISTINGS_API_URL || 'https://stevenmoning-admin.vercel.app';
+// Same-origin listings API (Express + MongoDB, Redis-cached) that Traefik
+// routes at /api on this domain. Override with VITE_LISTINGS_API_URL only if
+// listings ever move to a different host.
+const API_BASE = import.meta.env.VITE_LISTINGS_API_URL || '';
 
 const PAGE_SIZE = 9;
 
-// property_type (Mongo) -> what the property IS. Drives the badge and which
-// stats a card shows. Sales channel is a separate axis (is_off_market), so a
+// propertyType (Mongo) -> what the property IS. Drives the badge and which
+// stats a card shows. Sales channel is a separate axis (isOffMarket), so a
 // parcel can be land AND off-market and count under both pills.
-const TYPE_TO_CAT = { luxury: 'luxury', land: 'land', off_market: 'offmkt' };
+const TYPE_TO_CAT = { luxury: 'luxury', land: 'land' };
 
 function matchesFilter(p, key) {
   switch (key) {
@@ -35,40 +36,39 @@ function formatPrice(n) {
 }
 
 function lotDisplay(l) {
-  if (l.lot_size_acres) return `${l.lot_size_acres} acres`;
-  if (l.lot_size_sqft) return `${Number(l.lot_size_sqft).toLocaleString('en-US')} sq ft`;
-  return '—';
+  if (l.lotAcres) return `${l.lotAcres} acres`;
+  if (l.lotSqft) return `${Number(l.lotSqft).toLocaleString('en-US')} sq ft`;
+  return l.lotSizeRaw || '—';
 }
 
 // Map a public API listing (meta already stripped server-side) to a card.
 function toCard(l) {
-  const cat = TYPE_TO_CAT[l.property_type] || 'active';
+  const cat = TYPE_TO_CAT[l.propertyType] || 'active';
   const badge = cat === 'land' ? 'Land'
-    : cat === 'offmkt' ? 'Off Market'
     : cat === 'luxury' ? 'Luxury Estate' : 'Active';
   // Land parcels have no beds/baths/interior sqft — show lot facts instead.
   const stats = cat === 'land'
     ? [
         { l: 'Lot size', v: lotDisplay(l) },
-        { l: 'Zip', v: l.zip_code || '—' },
+        { l: 'Zip', v: l.zip || '—' },
       ]
     : [
-        { l: 'Beds', v: l.bedrooms ?? '—' },
-        { l: 'Baths', v: l.bathrooms ?? '—' },
-        { l: 'Sq ft', v: l.square_footage ? Number(l.square_footage).toLocaleString('en-US') : '—' },
+        { l: 'Beds', v: l.beds ?? '—' },
+        { l: 'Baths', v: l.baths ?? '—' },
+        { l: 'Sq ft', v: l.sqft ? Number(l.sqft).toLocaleString('en-US') : '—' },
       ];
   return {
     id: l.id,
     cat,
     badge,
-    offMarket: l.is_off_market === true,
+    offMarket: l.isOffMarket === true,
     title: l.title || l.address || 'Untitled listing',
     location: [l.city, l.state].filter(Boolean).join(', ') || l.address || 'Texas',
     price: formatPrice(l.price),
-    mls: l.mls_number || null,
+    mls: l.mlsNumber || null,
     stats,
     // Only ever a real photo of the parcel. No stock stand-ins.
-    image: (l.images && l.images[0]) || null,
+    image: (l.images && l.images[0]) || l.image || null,
   };
 }
 
@@ -216,9 +216,10 @@ export default function Properties({ initialFilter = 'all', limit = null, showHe
       try {
         const res = await fetch(`${API_BASE}/api/listings?status=published&limit=200`);
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        const { data } = await res.json();
+        const body = await res.json();
+        const data = body.listings || body.data || [];
         if (cancelled) return;
-        setProperties((data || []).map(toCard));
+        setProperties(data.map(toCard));
         setStatus('ready');
       } catch {
         if (!cancelled) setStatus('error');
