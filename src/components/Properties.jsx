@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 const filters = [
   { key: 'all',    label: 'All Properties' },
@@ -8,111 +8,252 @@ const filters = [
   { key: 'offmkt', label: 'Off Market' },
 ];
 
-const properties = [
-  {
-    cat: 'luxury',
-    badge: 'Luxury Estate',
-    title: 'The Highland Estate',
-    location: 'Highland Park, Dallas',
-    price: '$4,250,000',
-    beds: 6, baths: 7, sqft: '8,420',
-    image: 'https://images.unsplash.com/photo-1613490493576-7fde63acd811?auto=format&fit=crop&w=1200&q=80',
-  },
-  {
-    cat: 'active',
-    badge: 'New Listing',
-    title: 'Modern Frisco Manor',
-    location: 'Frisco, TX',
-    price: '$1,895,000',
-    beds: 5, baths: 5, sqft: '5,210',
-    image: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80',
-  },
-  {
-    cat: 'luxury',
-    badge: 'Featured',
-    title: 'Preston Hollow Residence',
-    location: 'Preston Hollow, Dallas',
-    price: '$3,675,000',
-    beds: 5, baths: 6, sqft: '6,800',
-    image: 'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&w=1200&q=80',
-  },
-  {
-    cat: 'offmkt',
-    badge: 'Off Market',
-    title: 'Lakefront Retreat',
-    location: 'Southlake, TX',
-    price: '$2,950,000',
-    beds: 5, baths: 5, sqft: '5,800',
-    image: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80',
-  },
-  {
-    cat: 'land',
-    badge: 'Land · 12 ac',
-    title: 'Westlake Land Parcel',
-    location: 'Westlake, TX',
-    price: '$1,350,000',
-    beds: '—', baths: '—', sqft: '12 acres',
-    image: 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=1200&q=80',
-  },
-  {
-    cat: 'active',
-    badge: 'Active',
-    title: 'Plano Heritage Home',
-    location: 'West Plano, TX',
-    price: '$1,125,000',
-    beds: 4, baths: 4, sqft: '4,150',
-    image: 'https://images.unsplash.com/photo-1605276373954-0c4a0dac5b12?auto=format&fit=crop&w=1200&q=80',
-  },
-  {
-    cat: 'luxury',
-    badge: 'Estate',
-    title: 'Volunteer Drive Manor',
-    location: 'Westlake, TX',
-    price: '$5,890,000',
-    beds: 7, baths: 8, sqft: '11,200',
-    image: 'https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?auto=format&fit=crop&w=1200&q=80',
-  },
-  {
-    cat: 'offmkt',
-    badge: 'Pocket Listing',
-    title: 'Turtle Creek Penthouse',
-    location: 'Uptown Dallas, TX',
-    price: '$2,180,000',
-    beds: 3, baths: 4, sqft: '3,940',
-    image: 'https://images.unsplash.com/photo-1567496898669-ee935f5f647a?auto=format&fit=crop&w=1200&q=80',
-  },
-  {
-    cat: 'land',
-    badge: 'Land · 5 ac',
-    title: 'Argyle Rolling Acres',
-    location: 'Argyle, TX',
-    price: '$685,000',
-    beds: '—', baths: '—', sqft: '5 acres',
-    image: 'https://images.unsplash.com/photo-1464082354059-27db6ce50048?auto=format&fit=crop&w=1200&q=80',
-  },
-];
+// Same-origin listings API (Express + MongoDB, Redis-cached) that Traefik
+// routes at /api on this domain. Override with VITE_LISTINGS_API_URL only if
+// listings ever move to a different host.
+const API_BASE = import.meta.env.VITE_LISTINGS_API_URL || '';
 
-const Stat = ({ v, l }) => (
-  <div className="text-center">
-    <div className="font-serif text-white text-lg font-semibold leading-none">{v}</div>
-    <div className="text-[0.65rem] text-white/45 uppercase tracking-[0.18em] mt-1">{l}</div>
+const PAGE_SIZE = 9;
+
+// propertyType (Mongo) -> what the property IS. Drives the badge and which
+// stats a card shows. Sales channel is a separate axis (isOffMarket), so a
+// parcel can be land AND off-market and count under both pills.
+const TYPE_TO_CAT = { luxury: 'luxury', land: 'land' };
+
+function matchesFilter(p, key) {
+  switch (key) {
+    case 'all':    return true;
+    case 'offmkt': return p.offMarket;        // sold privately, never on the MLS
+    case 'active': return !p.offMarket;       // actively listed on the MLS
+    default:       return p.cat === key;      // luxury / land -> physical type
+  }
+}
+
+// Never invent a figure. A listing with no price in the source data says so.
+function formatPrice(n) {
+  if (n == null) return 'Price on request';
+  return '$' + Number(n).toLocaleString('en-US');
+}
+
+function lotDisplay(l) {
+  if (l.lotAcres) return `${l.lotAcres} acres`;
+  if (l.lotSqft) return `${Number(l.lotSqft).toLocaleString('en-US')} sq ft`;
+  return l.lotSizeRaw || '—';
+}
+
+// Map a public API listing (meta already stripped server-side) to a card.
+function toCard(l) {
+  const cat = TYPE_TO_CAT[l.propertyType] || 'active';
+  const badge = cat === 'land' ? 'Land'
+    : cat === 'luxury' ? 'Luxury Estate' : 'Active';
+  // Land parcels have no beds/baths/interior sqft — show lot facts instead.
+  const stats = cat === 'land'
+    ? [
+        { l: 'Lot size', v: lotDisplay(l) },
+        { l: 'Zip', v: l.zip || '—' },
+      ]
+    : [
+        { l: 'Beds', v: l.beds ?? '—' },
+        { l: 'Baths', v: l.baths ?? '—' },
+        { l: 'Sq ft', v: l.sqft ? Number(l.sqft).toLocaleString('en-US') : '—' },
+      ];
+  return {
+    id: l.id,
+    cat,
+    badge,
+    offMarket: l.isOffMarket === true,
+    title: l.title || l.address || 'Untitled listing',
+    location: [l.city, l.state].filter(Boolean).join(', ') || l.address || 'Texas',
+    price: formatPrice(l.price),
+    mls: l.mlsNumber || null,
+    stats,
+    // Only ever a real photo of the parcel. No stock stand-ins.
+    image: (l.images && l.images[0]) || l.image || null,
+  };
+}
+
+// Shown when a listing has no photograph of its own. Deliberately a branded
+// panel, not a stock photo: we never imply an image is of the actual parcel.
+const NoPhoto = () => (
+  <div className="relative w-full h-full flex flex-col items-center justify-center gap-2
+                  bg-navy text-gold/35">
+    <div className="pointer-events-none absolute inset-0 pattern-crown opacity-60" />
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.1"
+         className="relative w-8 h-8">
+      <path d="M3 20h18" />
+      <path d="M5 20V10l7-4 7 4v10" />
+      <path d="M10 20v-5h4v5" />
+    </svg>
+    <span className="relative text-[0.6rem] tracking-[0.24em] uppercase text-white/30">
+      Photo coming soon
+    </span>
   </div>
 );
 
+function PropertyCard({ p }) {
+  return (
+    <article className="flex flex-col bg-navy2 border border-gold/20 rounded-lg overflow-hidden
+                        transition-colors duration-200 hover:border-gold/60">
+      <div className="relative aspect-[4/3] border-b border-gold/15">
+        {p.image
+          ? <img src={p.image} alt={p.title} loading="lazy" className="w-full h-full object-cover" />
+          : <NoPhoto />}
+
+        <span className="absolute top-3 left-3 bg-gold text-navy rounded
+                         text-[0.62rem] font-semibold tracking-[0.14em] uppercase px-2.5 py-1">
+          {p.badge}
+        </span>
+
+        {/* An off-market deal is never on the MLS, so these never collide. */}
+        {p.mls ? (
+          <span className="absolute top-3 right-3 bg-navy/90 border border-gold/25 text-white/70
+                           rounded text-[0.6rem] tracking-[0.1em] px-2 py-1">
+            MLS {p.mls}
+          </span>
+        ) : p.offMarket ? (
+          <span className="absolute top-3 right-3 bg-navy/90 border border-gold/40 text-gold
+                           rounded text-[0.6rem] font-semibold tracking-[0.12em] uppercase px-2 py-1">
+            Off Market
+          </span>
+        ) : null}
+      </div>
+
+      <div className="flex flex-col flex-1 p-5">
+        <div className="font-serif text-gold text-[1.6rem] font-semibold leading-none">
+          {p.price}
+        </div>
+
+        <h3 className="text-white text-[1.02rem] font-semibold leading-snug mt-2.5">
+          {p.title}
+        </h3>
+        <div className="text-white/55 text-[0.82rem] mt-1">{p.location}</div>
+
+        <dl className="mt-4 pt-4 border-t border-gold/15 space-y-1.5 text-[0.82rem]">
+          {p.stats.map((s) => (
+            <div key={s.l} className="flex items-baseline justify-between gap-3">
+              <dt className="text-white/45">{s.l}</dt>
+              <dd className="text-white font-medium">{s.v}</dd>
+            </div>
+          ))}
+        </dl>
+
+        <a href="#contact"
+           className="mt-auto pt-4 flex items-center justify-between
+                      text-gold hover:text-goldLt text-[0.76rem] font-semibold
+                      tracking-[0.14em] uppercase transition-colors">
+          <span>Request details</span>
+          <span aria-hidden="true">&rarr;</span>
+        </a>
+      </div>
+    </article>
+  );
+}
+
+function Pagination({ page, pageCount, onChange }) {
+  if (pageCount <= 1) return null;
+
+  // Compact window of page numbers around the current page.
+  const pages = [];
+  for (let i = 1; i <= pageCount; i++) {
+    if (i === 1 || i === pageCount || Math.abs(i - page) <= 1) pages.push(i);
+    else if (pages[pages.length - 1] !== '…') pages.push('…');
+  }
+
+  const btn = 'min-w-9 h-9 px-3 grid place-items-center rounded border text-[0.8rem] font-semibold transition-colors';
+
+  return (
+    <nav aria-label="Pagination" className="relative mt-10 flex items-center justify-center gap-2">
+      <button
+        onClick={() => onChange(page - 1)}
+        disabled={page === 1}
+        className={`${btn} bg-navy2 text-white border-gold/30 hover:border-gold
+                    disabled:opacity-35 disabled:hover:border-gold/30`}
+      >
+        Prev
+      </button>
+
+      {pages.map((n, i) =>
+        n === '…' ? (
+          <span key={`gap-${i}`} className="px-1 text-white/35 text-sm">…</span>
+        ) : (
+          <button
+            key={n}
+            onClick={() => onChange(n)}
+            aria-current={n === page ? 'page' : undefined}
+            className={`${btn} ${n === page
+              ? 'bg-gold text-navy border-gold'
+              : 'bg-navy2 text-white border-gold/30 hover:border-gold'}`}
+          >
+            {n}
+          </button>
+        )
+      )}
+
+      <button
+        onClick={() => onChange(page + 1)}
+        disabled={page === pageCount}
+        className={`${btn} bg-navy2 text-white border-gold/30 hover:border-gold
+                    disabled:opacity-35 disabled:hover:border-gold/30`}
+      >
+        Next
+      </button>
+    </nav>
+  );
+}
+
 export default function Properties({ initialFilter = 'all', limit = null, showHeader = true }) {
   const [active, setActive] = useState(initialFilter);
+  const [properties, setProperties] = useState([]);
+  const [status, setStatus] = useState('loading'); // 'loading' | 'ready' | 'error'
+  const [page, setPage] = useState(1);
+  const gridTop = useRef(null);
 
   useEffect(() => { setActive(initialFilter); }, [initialFilter]);
 
-  let visible = active === 'all' ? properties : properties.filter(p => p.cat === active);
-  if (limit) visible = visible.slice(0, limit);
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const res = await fetch(`${API_BASE}/api/listings?status=published&limit=200`);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const body = await res.json();
+        const data = body.listings || body.data || [];
+        if (cancelled) return;
+        setProperties(data.map(toCard));
+        setStatus('ready');
+      } catch {
+        if (!cancelled) setStatus('error');
+      }
+    })();
+    return () => { cancelled = true; };
+  }, []);
+
+  const matching = properties.filter(p => matchesFilter(p, active));
+
+  // `limit` (the homepage teaser) shows a fixed slice and never paginates.
+  const paginated = !limit;
+  const pageCount = paginated ? Math.ceil(matching.length / PAGE_SIZE) : 1;
+  const safePage = Math.min(page, Math.max(pageCount, 1));
+  const visible = paginated
+    ? matching.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE)
+    : matching.slice(0, limit);
+
+  const goToPage = (n) => {
+    setPage(n);
+    gridTop.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+
+  const selectFilter = (key) => {
+    setActive(key);
+    setPage(1);
+    const newHash = key === 'all' ? '#/properties' : `#/properties?cat=${key}`;
+    if (window.location.hash !== newHash) window.history.replaceState(null, '', newHash);
+  };
 
   return (
-    <section id="properties" className="relative bg-royal-radial
-                                         py-16 md:py-24 px-5 md:px-[6%] overflow-hidden">
+    <section id="properties" className="relative bg-navy
+                                        py-16 md:py-24 px-5 md:px-[6%] overflow-hidden">
       <div className="pointer-events-none absolute inset-0 pattern-crown opacity-40" />
-      <div className="pointer-events-none absolute top-1/3 -left-40 w-[480px] h-[480px]
-                      rounded-full bg-gold/[0.08] blur-3xl" />
 
       {showHeader && (
         <div className="relative reveal max-w-3xl mb-10">
@@ -132,28 +273,19 @@ export default function Properties({ initialFilter = 'all', limit = null, showHe
         </div>
       )}
 
-      {/* Filter pills - more opaque now */}
-      <div className="relative reveal mb-6 flex flex-wrap gap-2 md:gap-3">
+      <div ref={gridTop} className="relative reveal mb-6 flex flex-wrap gap-2 md:gap-3 scroll-mt-28">
         {filters.map(f => {
-          const count = f.key === 'all'
-            ? properties.length
-            : properties.filter(p => p.cat === f.key).length;
+          const count = properties.filter(p => matchesFilter(p, f.key)).length;
           return (
             <button
               key={f.key}
-              onClick={() => {
-                setActive(f.key);
-                const newHash = f.key === 'all' ? '#/properties' : `#/properties?cat=${f.key}`;
-                if (window.location.hash !== newHash) {
-                  window.history.replaceState(null, '', newHash);
-                }
-              }}
+              onClick={() => selectFilter(f.key)}
               className={`inline-flex items-center gap-2 px-4 md:px-5 py-2 md:py-2.5
                           rounded-full text-[0.72rem] md:text-[0.78rem] font-semibold
-                          tracking-[0.12em] uppercase border transition-all whitespace-nowrap
+                          tracking-[0.12em] uppercase border transition-colors whitespace-nowrap
                           ${active === f.key
-                            ? 'bg-gold text-navy border-gold shadow-gold'
-                            : 'bg-navy2 text-white border-gold/40 hover:border-gold hover:bg-gold hover:text-navy'}`}
+                            ? 'bg-gold text-navy border-gold'
+                            : 'bg-navy2 text-white border-gold/40 hover:border-gold'}`}
             >
               {f.label}
               <span className={`text-[0.65rem] font-bold rounded-full px-1.5 py-0.5 leading-none
@@ -166,79 +298,59 @@ export default function Properties({ initialFilter = 'all', limit = null, showHe
       </div>
 
       <div className="relative text-white/55 text-[0.78rem] mb-6">
-        Showing <span className="text-gold font-semibold">{visible.length}</span> of{' '}
-        <span className="text-gold font-semibold">{properties.length}</span> properties
+        {status === 'loading'
+          ? 'Loading listings…'
+          : status === 'error'
+          ? 'Unable to load listings right now.'
+          : matching.length === 0
+          ? null
+          : <>Showing <span className="text-gold font-semibold">{visible.length}</span> of{' '}
+             <span className="text-gold font-semibold">{matching.length}</span>
+             {' '}{matching.length === 1 ? 'property' : 'properties'}
+             {paginated && pageCount > 1 && <> · page {safePage} of {pageCount}</>}</>}
       </div>
 
-      {visible.length === 0 && (
-        <div className="relative text-center py-16 border border-gold/20 rounded-2xl bg-navy2/60">
+      {status === 'loading' && (
+        <div className="relative grid sm:grid-cols-2 lg:grid-cols-3 gap-5 md:gap-6">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <div key={i} className="animate-pulse bg-navy2 border border-gold/15 rounded-lg overflow-hidden">
+              <div className="aspect-[4/3] bg-white/5" />
+              <div className="p-5 space-y-3">
+                <div className="h-6 bg-white/10 rounded w-1/2" />
+                <div className="h-4 bg-white/5 rounded w-2/3" />
+                <div className="h-px bg-gold/10 my-4" />
+                <div className="h-3 bg-white/5 rounded w-full" />
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {status === 'error' && (
+        <div className="relative text-center py-16 border border-gold/20 rounded-lg bg-navy2">
+          <div className="font-serif text-gold text-xl mb-2">Couldn't load listings</div>
+          <div className="text-white/55 text-sm">Please refresh, or reach out and we'll send the full list.</div>
+        </div>
+      )}
+
+      {status === 'ready' && matching.length === 0 && (
+        <div className="relative text-center py-16 border border-gold/20 rounded-lg bg-navy2">
           <div className="font-serif text-gold text-xl mb-2">No properties in this category</div>
           <div className="text-white/55 text-sm">Check back soon or browse all listings.</div>
         </div>
       )}
 
-      <div key={active}
-           className="relative grid sm:grid-cols-2 lg:grid-cols-3 gap-5 md:gap-6">
-        {visible.map((p, i) => (
-          <article
-            key={p.title}
-            style={{ animationDelay: `${(i % 3) * 0.08}s` }}
-            className={`animate-fadeUp group royal-card
-                        bg-navy2 border border-gold/20 rounded-2xl overflow-hidden
-                        transition-all duration-500
-                        hover:-translate-y-2 hover:border-gold/55 hover:shadow-royal`}
-          >
-            <div className="relative aspect-[4/3] overflow-hidden kenburns-on-hover">
-              <img
-                src={p.image}
-                alt={p.title}
-                loading="lazy"
-                className="w-full h-full object-cover"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-navy/85 via-navy/10 to-transparent" />
-              <div className="absolute top-4 left-4 price-ribbon
-                              text-navy font-semibold text-[0.78rem] tracking-wider
-                              px-3.5 py-1.5 rounded-md uppercase">
-                {p.badge}
-              </div>
-              <div className="absolute bottom-4 right-4 font-serif text-gold
-                              text-[1.4rem] font-semibold drop-shadow-lg">
-                {p.price}
-              </div>
-            </div>
-            <div className="p-6">
-              <h3 className="font-serif text-white text-[1.3rem] font-semibold leading-tight
-                             group-hover:text-gold transition-colors">
-                {p.title}
-              </h3>
-              <div className="flex items-center gap-1.5 text-white/65 text-[0.85rem] mt-1.5">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                     strokeWidth="1.6" className="w-3.5 h-3.5">
-                  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
-                  <circle cx="12" cy="10" r="3"/>
-                </svg>
-                {p.location}
-              </div>
+      {status === 'ready' && visible.length > 0 && (
+        <>
+          <div className="relative grid sm:grid-cols-2 lg:grid-cols-3 gap-5 md:gap-6">
+            {visible.map((p) => <PropertyCard key={p.id} p={p} />)}
+          </div>
 
-              <div className="grid grid-cols-3 gap-2 mt-5 pt-5 border-t border-gold/20">
-                <Stat v={p.beds}  l="Beds" />
-                <Stat v={p.baths} l="Baths" />
-                <Stat v={p.sqft}  l="Sq Ft" />
-              </div>
-
-              <a href="#contact"
-                 className="mt-5 flex items-center justify-between
-                            text-gold text-[0.85rem] font-semibold tracking-wider uppercase
-                            group/cta">
-                <span>Request Details</span>
-                <span className="w-7 h-7 rounded-full bg-gold/20 grid place-items-center
-                                 group-hover/cta:bg-gold group-hover/cta:text-navy
-                                 group-hover/cta:translate-x-1 transition-all">→</span>
-              </a>
-            </div>
-          </article>
-        ))}
-      </div>
+          {paginated && (
+            <Pagination page={safePage} pageCount={pageCount} onChange={goToPage} />
+          )}
+        </>
+      )}
     </section>
   );
 }

@@ -2,15 +2,9 @@ export default function Hero() {
   return (
     <section id="top" className="relative grid lg:grid-cols-2 lg:min-h-screen overflow-hidden">
       {/* Left: copy */}
-      <div className="relative z-10 bg-royal-deep flex flex-col justify-start lg:justify-center
+      <div className="relative z-10 bg-navy flex flex-col justify-start lg:justify-center
                       px-5 sm:px-6 md:px-[6%] pt-24 sm:pt-28 lg:pt-28 xl:pt-32
                       pb-10 sm:pb-14 lg:pb-20 xl:pb-28 overflow-hidden">
-        {/* Royal radial accents */}
-        <div className="pointer-events-none absolute -top-32 -left-32 w-[480px] h-[480px]
-                        rounded-full bg-gold/[0.10] blur-3xl animate-pulseGold" />
-        <div className="pointer-events-none absolute -bottom-40 -right-20 w-[360px] h-[360px]
-                        rounded-full bg-wine/20 blur-3xl" />
-
         {/* Crown pattern decorative */}
         <div className="pointer-events-none absolute inset-0 pattern-crown opacity-50" />
 
@@ -48,10 +42,10 @@ export default function Hero() {
 
         <p className="relative mt-2 text-white/70 max-w-xl text-[clamp(0.95rem,1.4vw,1.05rem)]
                       leading-[1.85] animate-fadeUp [animation-delay:0.2s]">
-          Steven Moning has spent nearly two decades walking families, first-time buyers,
-          and seasoned investors through the DFW market — through good markets and bad.
-          You'll get straight answers, the right comps, and an agent who actually
-          picks up the phone.
+          For almost twenty years, Steven Moning has been guiding families, first-time
+          buyers, and seasoned investors through every twist of the DFW market — the good
+          years and the rough ones. What you get is plain English, honest comps, and an
+          agent who actually answers his phone when you call.
         </p>
 
         <div className="relative mt-10 flex flex-wrap items-center gap-4
@@ -88,6 +82,31 @@ export default function Hero() {
             </div>
           ))}
         </div>
+
+        {/* Brokered-by eXp mark — blends with dark theme */}
+        <div className="relative mt-10 sm:mt-12 flex items-center gap-4
+                        animate-fadeUp [animation-delay:0.5s]">
+          <img
+            src="/assets/exp3.png"
+            alt="eXp Realty"
+            className="h-16 w-16 sm:h-20 sm:w-20 object-contain rounded-xl
+                       ring-1 ring-gold/35 hover:ring-gold/70
+                       transition-all hover:-translate-y-0.5"
+          />
+          <div className="flex flex-col gap-0.5">
+            <span className="text-[0.6rem] sm:text-[0.65rem] tracking-[0.28em]
+                             uppercase text-gold/80">
+              Proudly Brokered by
+            </span>
+            <span className="font-serif text-white text-[1.05rem] sm:text-[1.2rem]
+                             font-semibold leading-tight">
+              eXp Realty
+            </span>
+            <span className="text-white/45 text-[0.72rem] sm:text-[0.78rem] leading-tight">
+              The world's #1 independent brokerage.
+            </span>
+          </div>
+        </div>
       </div>
 
       {/* Right: portrait */}
@@ -120,12 +139,9 @@ export default function Hero() {
                         md:bottom-10 md:right-10 md:left-auto
                         max-w-[calc(100%-2rem)] md:max-w-none
                         animate-floatYLg">
-          <div className="relative bg-navy/95 backdrop-blur-lg border border-gold/35
+          <div className="relative bg-navy border border-gold/35
                           rounded-xl md:rounded-2xl
-                          px-4 py-3 md:p-7 text-right shadow-royal
-                          before:absolute before:inset-0 before:rounded-xl md:before:rounded-2xl
-                          before:bg-gradient-to-br before:from-gold/10 before:to-transparent
-                          before:pointer-events-none">
+                          px-4 py-3 md:p-7 text-right shadow-royal">
             <div className="relative">
               <div className="flex items-center justify-end gap-2 mb-1 md:mb-2">
                 <span className="w-5 md:w-6 h-px bg-gold" />

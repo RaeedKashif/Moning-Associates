@@ -12,6 +12,7 @@ import Contact      from './components/Contact.jsx';
 import Footer       from './components/Footer.jsx';
 import PropertiesPage from './components/PropertiesPage.jsx';
 import BlogsPage      from './components/BlogsPage.jsx';
+import BlogPostPage   from './components/BlogPostPage.jsx';
 
 function parseRoute(hash) {
   const h = (hash || '').replace(/^#/, '');
@@ -19,6 +20,10 @@ function parseRoute(hash) {
     const q = h.split('?')[1];
     const params = new URLSearchParams(q || '');
     return { name: 'properties', filter: params.get('cat') || 'all' };
+  }
+  if (h.startsWith('/blog/')) {
+    const slug = decodeURIComponent(h.replace('/blog/', '').split('?')[0]);
+    return { name: 'blog', slug };
   }
   if (h.startsWith('/blogs')) return { name: 'blogs' };
   return { name: 'home', anchor: h };
@@ -83,6 +88,7 @@ export default function App() {
       <Navbar currentRoute={route.name} />
       {route.name === 'properties' && <PropertiesPage initialFilter={route.filter} />}
       {route.name === 'blogs'      && <BlogsPage />}
+      {route.name === 'blog'       && <BlogPostPage slug={route.slug} />}
       {route.name === 'home'       && <Home />}
       <Footer />
     </>

@@ -1,7 +1,7 @@
 const items = [
   {
     quote:
-      "Steven made the whole homebuying thing feel easy. He knew the DFW market cold and figured out what we actually needed before we did. We genuinely couldn't have done this without him.",
+      "Steven made the whole homebuying process feel easy — which, honestly, we didn't think was possible. He knew the DFW market cold and figured out what we needed before we even could. We genuinely couldn't have done this without him.",
     name: 'James & Rachel',
     role: 'First-Time Buyers · Frisco, TX',
     initials: 'JR',
@@ -9,14 +9,14 @@ const items = [
   },
   {
     quote:
-      "As an investor, speed and accuracy are everything. Steven's REO expertise has helped me close over a dozen deals without a single hiccup. He thinks like an investor, not just a broker.",
+      "As an investor, speed and accuracy are everything to me. Steven's REO expertise has helped me close over a dozen deals without a single hiccup. He thinks like an investor, not just a broker — and that makes all the difference.",
     name: 'Marcus T.',
     role: 'Real Estate Investor · Dallas, TX',
     initials: 'MT',
   },
   {
     quote:
-      "The transparency was refreshing. Steven kept us informed at every step, and his negotiation saved us thousands on our luxury listing. I'd recommend him without hesitation.",
+      "The transparency was honestly refreshing. Steven kept us in the loop at every single step, and his negotiation saved us thousands on our luxury listing. I'd recommend him without a moment's hesitation.",
     name: 'David & Karen L.',
     role: 'Home Sellers · Plano, TX',
     initials: 'DL',
@@ -52,8 +52,7 @@ export default function Testimonials() {
             <div className={`mt-7 pt-5 flex items-center gap-3 border-t
                              ${t.dark ? 'border-white/10' : 'border-black/[0.06]'}`}>
               <div className="w-11 h-11 rounded-full grid place-items-center
-                              font-serif font-bold text-navy
-                              bg-gradient-to-br from-gold to-goldDk">
+                              font-serif font-bold text-navy bg-gold">
                 {t.initials}
               </div>
               <div>

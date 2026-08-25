@@ -40,8 +40,8 @@ export default function Team() {
             </div>
             <p className="text-white/55 text-[0.86rem] leading-[1.7] mt-3">
               18+ years in DFW real estate, a Master's in Information Systems,
-              and hundreds of deals under his belt. Steven doesn't just lead the
-              team — he's in the field with you.
+              and hundreds of deals under his belt. Steven doesn't just run the
+              team from behind a desk — he's in the field with you.
             </p>
           </div>
         </article>

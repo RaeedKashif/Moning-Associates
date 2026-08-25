@@ -74,7 +74,7 @@ export default function Navbar({ currentRoute = 'home' }) {
                     px-5 md:px-[6%] transition-all duration-500
                     ${solid
                       ? 'bg-navy shadow-[0_1px_0_rgba(212,168,75,0.18),0_8px_24px_rgba(0,0,0,0.4)]'
-                      : 'bg-navy/95 backdrop-blur-xl'}`}
+                      : 'bg-navy'}`}
       >
         <span className="absolute inset-x-0 top-0 h-px bg-gradient-to-r
                          from-transparent via-gold/60 to-transparent" />
@@ -91,8 +91,6 @@ export default function Navbar({ currentRoute = 'home' }) {
               className="w-full h-full object-cover scale-110
                          transition-transform duration-700 group-hover:scale-125"
             />
-            <span className="absolute inset-0 bg-gradient-to-tr from-gold/0 to-gold/15
-                             pointer-events-none" />
           </span>
           <div className="leading-tight min-w-0">
             <div className="font-serif text-[0.95rem] sm:text-[1.15rem] md:text-[1.35rem]
@@ -168,19 +166,32 @@ export default function Navbar({ currentRoute = 'home' }) {
               </li>
             );
           })}
+          <li className="ml-2 pl-3 border-l border-gold/25">
+            <div className="inline-flex items-center gap-2"
+                 title="Brokered by eXp Realty">
+              <span className="text-[0.55rem] tracking-[0.22em] uppercase
+                               text-gold/60 leading-tight text-right">
+                Brokered<br/>by
+              </span>
+              <img
+                src="/assets/exp3.png"
+                alt="eXp Realty"
+                className="h-9 w-9 object-contain rounded-md
+                           ring-1 ring-gold/30 hover:ring-gold/60
+                           transition-all"
+              />
+            </div>
+          </li>
           <li>
             <a
               href="#contact"
               onClick={(e) => goToAnchor(e, '#contact')}
-              className="ml-3 relative inline-flex items-center gap-2
-                         bg-gradient-to-r from-gold to-goldLt text-navy font-semibold text-[0.86rem]
+              className="ml-3 inline-flex items-center gap-2
+                         bg-gold hover:bg-goldLt text-navy font-semibold text-[0.86rem]
                          px-6 py-2.5 rounded-md transition-all duration-300
-                         hover:shadow-gold hover:-translate-y-0.5 overflow-hidden group"
+                         hover:shadow-gold hover:-translate-y-0.5"
             >
-              <span className="relative z-10">Contact Us</span>
-              <span className="absolute inset-0 -translate-x-full
-                               bg-gradient-to-r from-transparent via-white/40 to-transparent
-                               group-hover:translate-x-full transition-transform duration-700" />
+              Contact Us
             </a>
           </li>
         </ul>
@@ -257,7 +268,7 @@ export default function Navbar({ currentRoute = 'home' }) {
           <a
             href="#contact"
             onClick={(e) => { goToAnchor(e, '#contact'); close(); }}
-            className="mt-6 bg-gradient-to-r from-gold to-goldLt text-navy font-semibold text-center
+            className="mt-6 bg-gold hover:bg-goldLt text-navy font-semibold text-center
                        px-6 py-4 rounded-xl text-base hover:shadow-gold transition"
           >
             Contact Us &rarr;
@@ -267,13 +278,26 @@ export default function Navbar({ currentRoute = 'home' }) {
             <p className="text-gold/80 text-xs tracking-[0.18em] uppercase mb-2">
               Reach Steven Directly
             </p>
-            <a href="tel:4695809228" className="block text-white py-1.5">
-              469-580-9228
+            <a href="tel:+14695809228" className="block text-white py-1.5">
+              +1 469-580-9228
             </a>
             <a href="mailto:steven.moning@exprealty.com"
                className="block text-white py-1.5 text-sm">
               steven.moning@exprealty.com
             </a>
+          </div>
+
+          {/* Mobile eXp Realty partnership badge */}
+          <div className="mt-6 pt-6 border-t border-gold/20 flex items-center gap-4">
+            <span className="text-gold/80 text-[0.65rem] tracking-[0.22em] uppercase">
+              Brokered by
+            </span>
+            <img
+              src="/assets/exp3.png"
+              alt="eXp Realty"
+              className="h-12 w-12 object-contain rounded-md
+                         ring-1 ring-gold/40"
+            />
           </div>
         </div>
       </div>
