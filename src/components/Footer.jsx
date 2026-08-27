@@ -6,8 +6,9 @@ const links = [
   { href: '#/sellers',   label: 'Sellers' },
 ];
 
-// Kept out of the nav row above so the legal pages sit together on the
-// bottom bar, where people expect to find them.
+// Listed twice on purpose: under the nav column, where someone scanning the
+// footer's links will look for them, and again on the bottom bar, where people
+// expect legal pages to sit.
 const legal = [
   { href: '/privacy', label: 'Privacy Policy' },
   { href: '/terms',   label: 'Terms and Conditions' },
@@ -45,16 +46,32 @@ export default function Footer() {
           </div>
         </div>
 
-        <ul className="flex flex-wrap gap-5 md:gap-7 md:justify-center pt-2">
-          {links.map(l => (
-            <li key={l.href}>
-              <a href={l.href}
-                 className="text-white/45 hover:text-gold text-[0.86rem] transition-colors">
-                {l.label}
-              </a>
-            </li>
-          ))}
-        </ul>
+        <nav className="pt-2">
+          <ul className="flex flex-wrap gap-5 md:gap-7 md:justify-center">
+            {links.map(l => (
+              <li key={l.href}>
+                <a href={l.href}
+                   className="text-white/45 hover:text-gold text-[0.86rem] transition-colors">
+                  {l.label}
+                </a>
+              </li>
+            ))}
+          </ul>
+          {/* Same size as the row above so the column stays even, but brighter
+              and medium weight so the legal pages read as findable, not buried. */}
+          <ul className="flex flex-wrap gap-x-5 gap-y-1 md:gap-x-7
+                         md:justify-center mt-4">
+            {legal.map(l => (
+              <li key={l.href}>
+                <a href={l.href}
+                   className="text-white/70 hover:text-gold text-[0.86rem]
+                              font-medium transition-colors">
+                  {l.label}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </nav>
 
         <div className="md:justify-self-end">
           <div className="text-white/35 text-[0.7rem] tracking-[0.18em]
