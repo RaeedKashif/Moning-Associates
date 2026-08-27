@@ -2,7 +2,7 @@ import InquiryForm from './InquiryForm.jsx';
 import InquiryToggle from './InquiryToggle.jsx';
 
 export default function InquiryPage({ config }) {
-  const { hero, reassurance } = config;
+  const { hero, reassurance, role } = config;
 
   // Each form has its own URL, so switching is real navigation — the heading,
   // the page title, and the form all change together.
@@ -60,6 +60,17 @@ export default function InquiryPage({ config }) {
               </li>
             ))}
           </ul>
+
+          {/* Acting capacity, stated on the form itself — someone filling in a
+              buyer-representation form should not have to go looking for it. */}
+          {role && (
+            <div className="mb-10 px-5 py-4 rounded-xl border border-gold/25 bg-white/[0.03]">
+              <p className="text-white text-[0.9rem] font-semibold">{role.label}</p>
+              <p className="text-white/60 text-[0.82rem] leading-[1.8] mt-1.5">
+                {role.note}
+              </p>
+            </div>
+          )}
 
           <div className="pt-7 border-t border-gold/15">
             <p className="text-[0.68rem] tracking-[0.22em] uppercase text-gold/80 mb-3">

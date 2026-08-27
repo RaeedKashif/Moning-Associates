@@ -115,22 +115,37 @@ export default function Footer() {
           </a>
           <div>
             <div className="text-gold text-[0.65rem] tracking-[0.24em] uppercase mb-1">
-              Proudly Brokered by
+              Brokered by
             </div>
             <div className="font-serif text-white text-[1.2rem] sm:text-[1.35rem]
                             font-semibold leading-tight">
               eXp Realty
             </div>
             <div className="text-white/55 text-[0.82rem] mt-1 max-w-md">
-              A proud member of the global eXp Realty network — the world's
-              fastest-growing residential real estate brokerage.
+              All licensed real estate brokerage services are provided through
+              eXp Realty.
             </div>
           </div>
         </div>
         <div className="text-white/35 text-[0.72rem] italic max-w-sm md:text-right shrink-0">
-          Equal Housing Opportunity.<br className="hidden md:block"/>
-          Each office independently owned and operated.
+          Equal Housing Opportunity.
         </div>
+      </div>
+
+      {/* Required brokerage and listing disclosure. Body-sized rather than fine
+          print — it states who provides brokerage services and who holds the
+          listings, which a reader is entitled to find without hunting. */}
+      <div className="mb-8 px-5 sm:px-8 py-5 rounded-2xl
+                      border border-gold/20 bg-white/[0.02]">
+        <p className="text-white/60 text-[0.8rem] leading-[1.9] max-w-4xl">
+          Steven Moning is a Texas real estate sales agent sponsored by eXp
+          Realty. All licensed real estate brokerage services are provided
+          through eXp Realty. Listings displayed on this website may be listed by
+          brokers other than eXp Realty. Steven Moning and eXp Realty are not the
+          listing agent unless specifically identified as such. Information is
+          deemed reliable but is not guaranteed and should be independently
+          verified.
+        </p>
       </div>
 
       <div className="flex flex-col md:flex-row justify-between items-start

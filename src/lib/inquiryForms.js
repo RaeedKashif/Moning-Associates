@@ -44,6 +44,16 @@ export const BUYER = {
   navLabel: 'Buyers',
   toggleLabel: "I'm Buying",
   title: 'For Buyers | Steven Moning, REALTOR® · eXp Realty',
+  // The capacity Steven acts in when he represents a buyer. This is a
+  // buyer-representation form, so it says so here rather than leaving the
+  // reader to infer it.
+  role: {
+    label: "Buyer's Agent with eXp Realty",
+    note:
+      'Steven assists buyers and investors with identifying and acquiring ' +
+      'suitable properties. All licensed brokerage services are provided ' +
+      'through eXp Realty.',
+  },
   hero: {
     tag: 'For Buyers',
     titleLead: 'Tell us what you',
