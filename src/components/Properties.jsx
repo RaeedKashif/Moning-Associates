@@ -356,6 +356,10 @@ export default function Properties({
   const countByType = (key) => properties.filter(p => matches(p, key, channel)).length;
   const countByChannel = (key) => properties.filter(p => matches(p, type, key)).length;
 
+  // Arriving on a channel's own page pins it there. Only the pooled listing
+  // pages ("All Properties", or a type across every channel) stay switchable.
+  const channelLocked = initialChannel !== 'all';
+
   // Without its own header this sits directly under the page hero, which has
   // already paid for the space above — so only the bottom padding is full.
   return (
@@ -395,13 +399,20 @@ export default function Properties({
           countFor={countByType}
           onSelect={(key) => goTo(key, channel)}
         />
-        <FilterRow
-          caption="How it sells"
-          options={channelFilters}
-          active={channel}
-          countFor={countByChannel}
-          onSelect={(key) => goTo(type, key)}
-        />
+        {/* A page that is already about one sales channel does not offer the
+            others. On-market listings and off-market opportunities carry
+            different disclosures, so a page must not quietly swap between
+            them while its heading and disclosure still say otherwise — the
+            nav is the way across. */}
+        {!channelLocked && (
+          <FilterRow
+            caption="How it sells"
+            options={channelFilters}
+            active={channel}
+            countFor={countByChannel}
+            onSelect={(key) => goTo(type, key)}
+          />
+        )}
       </div>
 
       <div className="relative text-white/55 text-[0.78rem] mb-6">
