@@ -19,7 +19,7 @@ export const PROPERTY_TYPES = [
     slug: 'properties',
     label: 'All Properties',
     navLabel: 'View All',
-    title: 'All Properties | Moning & Associates',
+    title: 'All Properties | Steven Moning, REALTOR® · eXp Realty',
     description:
       'Every listing we are currently working across Dallas–Fort Worth — luxury estates, land, student housing, MLS listings, off-market deals and wholesale contracts.',
     hero: {
@@ -44,7 +44,7 @@ export const PROPERTY_TYPES = [
     slug: 'luxury-properties',
     label: 'Luxury',
     navLabel: 'Luxury Properties',
-    title: 'Luxury Properties | Moning & Associates',
+    title: 'Luxury Properties | Steven Moning, REALTOR® · eXp Realty',
     description:
       'Estates, designer homes, and premium residences across the most sought-after neighbourhoods in Dallas–Fort Worth.',
     hero: {
@@ -69,7 +69,7 @@ export const PROPERTY_TYPES = [
     slug: 'lands',
     label: 'Lands',
     navLabel: 'Lands',
-    title: 'Lands | Moning & Associates',
+    title: 'Lands | Steven Moning, REALTOR® · eXp Realty',
     description:
       'Land and lot listings across DFW — development parcels, investment acreage, and residential lots.',
     hero: {
@@ -94,7 +94,7 @@ export const PROPERTY_TYPES = [
     slug: 'dorms',
     label: 'Dorms',
     navLabel: 'Dorms',
-    title: 'Dorms | Moning & Associates',
+    title: 'Dorms | Steven Moning, REALTOR® · eXp Realty',
     description:
       'Student housing across DFW — purpose-built blocks, converted homes, and by-the-bed rentals within walking distance of the campuses.',
     hero: {
@@ -132,27 +132,33 @@ export const SALES_CHANNELS = [
     key: 'on_market',
     slug: 'active-listing',
     standaloneSlug: 'active-listing',
-    label: 'Active Listing',
-    pillLabel: 'On Market',
-    navLabel: 'Active Listing',
-    badge: 'Active',
-    heroTag: 'MLS Active',
+    label: 'On-Market Properties',
+    pillLabel: 'On-Market',
+    navLabel: 'On-Market Properties',
+    badge: 'On-Market',
+    heroTag: 'On the MLS',
     // Used when a type and a channel are both chosen.
     comboBlurb:
-      'Listed on the MLS and open to any buyer — priced, photographed and ready ' +
-      'to show.',
+      'Listed for sale on the MLS through participating real estate brokers.',
     // The standalone page, across every property type.
-    title: 'Active Listing | Moning & Associates',
+    title: 'On-Market Properties | Steven Moning, REALTOR® · eXp Realty',
     description:
-      'Properties currently listed and available on the market across Dallas–Fort Worth.',
+      'Properties currently listed for sale through participating real estate brokers across Dallas–Fort Worth. Steven Moning, a Texas real estate sales agent sponsored by eXp Realty, is available to provide buyer representation.',
     hero: {
-      tag: 'MLS Active',
-      titleLead: 'Active',
-      titleAccent: 'Listing',
+      tag: 'On the MLS',
+      titleLead: 'On-Market',
+      titleAccent: 'Properties',
       blurb:
-        'Homes currently on the market — priced right, presented well, and ready ' +
-        'for buyers who are serious.',
+        'Browse properties currently listed for sale through participating real ' +
+        'estate brokers.',
     },
+    // Required agency disclosure, rendered as its own notice under the hero
+    // rather than folded into the blurb — it has to be read, not skimmed past.
+    disclosure:
+      'Steven Moning is a Texas real estate sales agent sponsored by eXp Realty ' +
+      'and is available to provide buyer-representation services. Unless ' +
+      'specifically identified otherwise, Steven Moning and eXp Realty are not ' +
+      'the listing agent or listing broker for the properties displayed.',
     cta: {
       headingLead: 'Ready to make',
       headingAccent: 'an offer?',
@@ -166,25 +172,31 @@ export const SALES_CHANNELS = [
     key: 'off_market',
     slug: 'off-market',
     standaloneSlug: 'off-market-properties',
-    label: 'Off Market',
-    pillLabel: 'Off Market',
-    navLabel: 'Off Market Properties',
-    badge: 'Off Market',
-    heroTag: 'Exclusive Access',
+    label: 'Off-Market Opportunities',
+    pillLabel: 'Off-Market',
+    navLabel: 'Off-Market Opportunities',
+    badge: 'Off-Market',
+    heroTag: 'Not on the MLS',
     comboBlurb:
       'Never listed on the MLS. These move quietly through Steven’s network of ' +
       'owners, investors and agents across DFW.',
-    title: 'Off Market Properties | Moning & Associates',
+    title: 'Off-Market Opportunities | Steven Moning, REALTOR® · eXp Realty',
     description:
-      'Private DFW listings that never reach the MLS — available through Steven Moning’s investor and agent network.',
+      'Private DFW opportunities that never reach the MLS — available through Steven Moning’s investor and agent network.',
     hero: {
-      tag: 'Exclusive Access',
-      titleLead: 'Off Market',
-      titleAccent: 'Properties',
+      tag: 'Not on the MLS',
+      titleLead: 'Off-Market',
+      titleAccent: 'Opportunities',
       blurb:
-        'Private listings that never reach the general public. These come through ' +
-        "Steven's network of investors and agents across DFW.",
+        'Opportunities that are not listed on the MLS. These come through ' +
+        "Steven's network of owners, investors and agents across DFW.",
     },
+    // These are not MLS listings, and the page must not let them read as if
+    // they were.
+    disclosure:
+      'These opportunities are not listed on the MLS and are not offered through ' +
+      'an MLS listing broker. Availability, pricing and terms are not verified by ' +
+      'a multiple listing service and may change or expire without notice.',
     cta: {
       headingLead: 'Want more',
       headingAccent: 'off-market deals?',
@@ -206,7 +218,7 @@ export const SALES_CHANNELS = [
     comboBlurb:
       'Contracts we control and assign on — priced for buyers who can close ' +
       'quickly and without a financing contingency.',
-    title: 'Wholesale Properties | Moning & Associates',
+    title: 'Wholesale Properties | Steven Moning, REALTOR® · eXp Realty',
     description:
       'Private acquisition and assignment deals across DFW — contracted properties available to buyers who can close fast.',
     hero: {
@@ -286,15 +298,20 @@ export function pageCopy(typeKey = 'all', channelKey = 'all') {
   if (channel.key === 'all') return type;
   if (type.key === 'all') return channel;
 
+  // The short channel form is what combines readably — "On-Market Lands", not
+  // "On-Market Properties Lands".
   return {
-    title: `${channel.label} ${type.label} | Moning & Associates`,
-    description: `${channel.label} ${type.label.toLowerCase()} across Dallas–Fort Worth.`,
+    title: `${channel.pillLabel} ${type.label} | Steven Moning, REALTOR® · eXp Realty`,
+    description: `${channel.pillLabel} ${type.label.toLowerCase()} across Dallas–Fort Worth.`,
     hero: {
       tag: channel.heroTag,
-      titleLead: channel.label,
+      titleLead: channel.pillLabel,
       titleAccent: type.label,
       blurb: channel.comboBlurb,
     },
+    // A narrowed page is still the same kind of property, so it carries the
+    // same disclosure as the channel it belongs to.
+    disclosure: channel.disclosure,
     cta: type.cta,
   };
 }

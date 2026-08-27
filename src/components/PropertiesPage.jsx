@@ -2,7 +2,7 @@ import Properties from './Properties.jsx';
 import { pageCopy } from '../lib/propertyCategories.js';
 
 export default function PropertiesPage({ type = 'all', channel = 'all' }) {
-  const { hero, cta } = pageCopy(type, channel);
+  const { hero, cta, disclosure } = pageCopy(type, channel);
 
   return (
     <main className="pt-[76px]">
@@ -30,6 +30,17 @@ export default function PropertiesPage({ type = 'all', channel = 'all' }) {
                         animate-fadeUp [animation-delay:0.2s]">
             {hero.blurb}
           </p>
+
+          {/* Agency disclosure. Plain, legible body text rather than fine print —
+              it is a required statement about who represents whom, and burying it
+              would defeat the point of showing it. */}
+          {disclosure && (
+            <p className="text-white/75 text-[0.9rem] leading-[1.8] max-w-2xl mx-auto
+                          mt-7 px-5 py-4 rounded-xl border border-gold/25 bg-white/[0.03]
+                          text-left animate-fadeUp [animation-delay:0.25s]">
+              {disclosure}
+            </p>
+          )}
 
           <div className="royal-divider mt-8 animate-fadeUp [animation-delay:0.3s]">
             <span className="h-px w-16 bg-gradient-to-r from-transparent via-gold to-transparent" />

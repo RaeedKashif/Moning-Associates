@@ -43,7 +43,7 @@ export const BUYER = {
   slug: 'buyers',
   navLabel: 'Buyers',
   toggleLabel: "I'm Buying",
-  title: 'For Buyers | Moning & Associates',
+  title: 'For Buyers | Steven Moning, REALTOR® · eXp Realty',
   hero: {
     tag: 'For Buyers',
     titleLead: 'Tell us what you',
@@ -182,7 +182,7 @@ export const SELLER = {
   slug: 'sellers',
   navLabel: 'Sellers',
   toggleLabel: "I'm Selling",
-  title: 'For Sellers | Moning & Associates',
+  title: 'For Sellers | Steven Moning, REALTOR® · eXp Realty',
   hero: {
     tag: 'For Sellers',
     titleLead: 'Find out what',

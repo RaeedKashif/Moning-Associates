@@ -17,8 +17,8 @@ import InquiryPage    from './components/InquiryPage.jsx';
 import { TYPE_BY_KEY, CHANNEL_BY_KEY, resolveListingPath, pageCopy } from './lib/propertyCategories.js';
 import { FORM_BY_SLUG } from './lib/inquiryForms.js';
 
-const HOME_TITLE = 'Moning & Associates · Steven Moning — DFW Real Estate';
-const BLOGS_TITLE = 'All Blogs | Moning & Associates';
+const HOME_TITLE = 'Steven Moning, REALTOR® | eXp Realty';
+const BLOGS_TITLE = 'All Blogs | Steven Moning, REALTOR® · eXp Realty';
 
 // `?cat=` predates the split into type and channel, so two of its values named
 // a sales channel rather than a property type. Translate rather than drop them.

@@ -64,7 +64,7 @@ export default function BlogPostPage({ slug }) {
 
   // App titles every other route; a post can only title itself once it loads.
   useEffect(() => {
-    if (post?.title) document.title = `${post.title} | Moning & Associates`;
+    if (post?.title) document.title = `${post.title} | Steven Moning, REALTOR® · eXp Realty`;
   }, [post]);
 
   if (loading) {
@@ -165,7 +165,7 @@ export default function BlogPostPage({ slug }) {
             <div className="leading-tight">
               <div className="text-white text-sm font-semibold">{post.author}</div>
               <div className="text-white/50 text-[0.7rem] tracking-[0.2em] uppercase">
-                eXp Realty &middot; DFW Premier
+                Brokered by eXp Realty
               </div>
             </div>
           </div>
@@ -223,7 +223,7 @@ export default function BlogPostPage({ slug }) {
                 <h4 className="font-serif text-navy text-xl font-semibold">
                   {post.author}
                 </h4>
-                <p className="text-muted text-sm">eXp Realty &middot; DFW Premier</p>
+                <p className="text-muted text-sm">Brokered by eXp Realty</p>
               </div>
             </div>
             <p className="text-slate leading-[1.85] mb-6">

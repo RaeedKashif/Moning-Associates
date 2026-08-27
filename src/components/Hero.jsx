@@ -115,7 +115,7 @@ export default function Hero() {
         <div className="absolute inset-0 animate-kenburns">
           <img
             src="/assets/Black Hi-Res.jpg"
-            alt="Steven Moning — Realtor, Moning & Associates"
+            alt="Steven Moning, REALTOR® — eXp Realty"
             loading="eager"
             className="w-full h-full object-cover
                        object-[center_top] sm:object-[center_top] md:object-[center_15%] lg:object-[center_18%]"
@@ -151,9 +151,10 @@ export default function Hero() {
                              text-[1rem] md:text-[clamp(1.1rem,2.4vw,1.65rem)] leading-tight">
                 Steven Moning
               </h3>
+              {/* The name above runs 1rem–1.65rem, so this stays at 0.7rem–0.875rem
+                  to keep the brokerage at least half its size, per TREC. */}
               <p className="text-gold text-[0.7rem] md:text-sm mt-0.5 font-medium tracking-wider">
-                CEO · eXp Realtor
-                <span className="hidden md:inline"> · Moning &amp; Associates</span>
+                REALTOR&reg; &middot; Brokered by eXp Realty
               </p>
               <div className="text-white/40 text-[0.65rem] tracking-[0.22em]
                               uppercase mt-3 hidden md:block">

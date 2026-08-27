@@ -67,7 +67,7 @@ export default function About() {
             whole game.
           </p>
           <p>
-            As CEO of Moning &amp; Associates, he runs a small, focused team built
+            Sponsored by eXp Realty, he works with a small, focused group built
             around one rule: every client walks away better off than when they
             started. Every time.
           </p>

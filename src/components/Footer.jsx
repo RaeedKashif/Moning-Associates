@@ -28,16 +28,18 @@ export default function Footer() {
         <div className="flex items-start gap-4">
           <img
             src="/assets/brandlogo2.png"
-            alt="Moning & Associates Realty Group"
+            alt="Steven Moning, REALTOR®"
             className="w-20 h-20 object-contain rounded-xl"
           />
           <div>
             <div className="font-serif text-gold text-[1.3rem] font-semibold">
-              Moning &amp; Associates
+              Steven Moning, REALTOR&reg;
             </div>
-            <div className="text-white/35 text-[0.72rem] tracking-[0.18em]
+            {/* Kept at 0.8rem against the 1.3rem name above: TREC wants the
+                brokerage at least half the size of the largest agent name. */}
+            <div className="text-white/60 text-[0.8rem] tracking-[0.14em]
                             uppercase mt-1">
-              DFW Premier Real Estate
+              Brokered by eXp Realty
             </div>
             <p className="text-white/45 text-[0.85rem] leading-[1.65] mt-3 max-w-sm">
               Helping families and investors find the right address in
@@ -134,7 +136,8 @@ export default function Footer() {
       <div className="flex flex-col md:flex-row justify-between items-start
                       md:items-center gap-2">
         <span className="text-white/25 text-[0.78rem]">
-          © {new Date().getFullYear()} Moning &amp; Associates. All rights reserved.
+          © {new Date().getFullYear()} Steven Moning, REALTOR&reg; &middot; eXp Realty.
+          All rights reserved.
         </span>
         <div className="flex flex-wrap items-center gap-x-4 gap-y-1
                         md:justify-end">

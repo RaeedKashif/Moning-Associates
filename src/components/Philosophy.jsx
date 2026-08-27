@@ -36,7 +36,7 @@ export default function Philosophy() {
           <div className="flex items-center gap-4 mt-8">
             <span className="w-7 h-px bg-gold" />
             <span className="text-white/45 text-sm">
-              Steven Moning — CEO, Moning &amp; Associates
+              Steven Moning, REALTOR&reg; &middot; Brokered by eXp Realty
             </span>
           </div>
         </div>

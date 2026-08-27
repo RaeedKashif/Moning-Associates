@@ -63,6 +63,12 @@ function toCard(l) {
     location: [l.city, l.state].filter(Boolean).join(', ') || l.address || 'Texas',
     price: formatPrice(l.price),
     mls: l.mls_number || null,
+    // Who actually holds the listing. TREC requires this attribution on an
+    // on-market card, but the feed does not carry it yet, so read whichever
+    // name it eventually arrives under and render nothing until it does —
+    // an invented brokerage on a required disclosure is worse than a gap.
+    listingBrokerage:
+      l.listing_office || l.listing_brokerage || l.list_office_name || null,
     stats,
     // Only ever a real photo of the parcel. No stock stand-ins.
     image: (l.images && l.images[0]) || null,
@@ -161,11 +167,25 @@ function PropertyCard({ p }) {
           ))}
         </dl>
 
+        {/* Where this property comes from and who holds it. An MLS listing is
+            someone else's listing unless it says otherwise, and the card has to
+            say so on its own — people share and screenshot single cards. */}
+        <div className="mt-3 pt-3 border-t border-gold/10 space-y-0.5
+                        text-[0.7rem] leading-[1.6] text-white/45">
+          {p.listingBrokerage && <div>Listed by: {p.listingBrokerage}</div>}
+          {p.mls
+            ? <div>MLS #{p.mls}</div>
+            : <div>Not listed on the MLS</div>}
+          {p.channel === 'on_market' && (
+            <div>Steven Moning with eXp Realty is not the listing agent.</div>
+          )}
+        </div>
+
         <a href="#inquire"
-           className="mt-auto pt-4 flex items-center justify-between
+           className="mt-auto pt-4 flex items-center justify-between gap-3
                       text-gold hover:text-goldLt text-[0.76rem] font-semibold
                       tracking-[0.14em] uppercase transition-colors">
-          <span>Request details</span>
+          <span>Ask about this property</span>
           <span aria-hidden="true">&rarr;</span>
         </a>
       </div>
