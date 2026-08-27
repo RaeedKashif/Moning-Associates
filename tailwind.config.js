@@ -1,4 +1,6 @@
 /** @type {import('tailwindcss').Config} */
+import typography from '@tailwindcss/typography';
+
 export default {
   content: ['./index.html', './src/**/*.{js,jsx,ts,tsx}'],
   theme: {
@@ -113,7 +115,133 @@ export default {
         'crown-pattern':
           "url(\"data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M40 12 L46 22 L58 22 L48 30 L52 42 L40 36 L28 42 L32 30 L22 22 L34 22 Z' fill='none' stroke='%23D4A84B' stroke-width='0.6' opacity='0.18'/%3E%3C/svg%3E\")",
       },
+      typography: {
+        DEFAULT: {
+          css: {
+            '--tw-prose-body':          '#3F4756',
+            '--tw-prose-headings':      '#06101C',
+            '--tw-prose-bold':          '#06101C',
+            '--tw-prose-links':         '#A07830',
+            '--tw-prose-quotes':        '#06101C',
+            '--tw-prose-quote-borders': '#D4A84B',
+            '--tw-prose-bullets':       '#D4A84B',
+            '--tw-prose-counters':      '#A07830',
+            '--tw-prose-code':          '#06101C',
+            '--tw-prose-hr':            '#D4A84B40',
+            maxWidth: 'none',
+            lineHeight: '1.7',
+            fontSize:   '1.05rem',
+            color: '#3F4756',
+            h1: {
+              fontFamily: '"Cormorant Garamond", serif',
+              fontWeight: '600',
+              color:      '#06101C',
+              lineHeight: '1.1',
+              marginBottom: '0.75rem',
+            },
+            h2: {
+              fontFamily:   '"Cormorant Garamond", serif',
+              fontWeight:   '600',
+              color:        '#06101C',
+              fontSize:     '1.85rem',
+              lineHeight:   '1.15',
+              marginTop:    '2.5rem',
+              marginBottom: '0.85rem',
+            },
+            h3: {
+              fontFamily:   '"Cormorant Garamond", serif',
+              fontWeight:   '600',
+              color:        '#06101C',
+              fontSize:     '1.4rem',
+              lineHeight:   '1.2',
+              marginTop:    '2rem',
+              marginBottom: '0.65rem',
+            },
+            h4: {
+              fontFamily:   '"Cormorant Garamond", serif',
+              fontWeight:   '600',
+              color:        '#06101C',
+              marginTop:    '1.5rem',
+              marginBottom: '0.5rem',
+            },
+            p: {
+              marginBottom: '1.4rem',
+              lineHeight:   '1.7',
+            },
+            strong: {
+              color:      '#06101C',
+              fontWeight: '600',
+            },
+            blockquote: {
+              borderLeftColor:   '#D4A84B',
+              borderLeftWidth:   '4px',
+              backgroundColor:   'rgba(212,168,75,0.07)',
+              borderRadius:      '0 0.75rem 0.75rem 0',
+              padding:           '1.25rem 1.5rem',
+              fontStyle:         'italic',
+              fontFamily:        '"Cormorant Garamond", serif',
+              color:             '#06101C',
+              fontSize:          '1.15rem',
+              lineHeight:        '1.7',
+              marginTop:         '1.75rem',
+              marginBottom:      '1.75rem',
+            },
+            'blockquote p': {
+              margin: '0',
+            },
+            'blockquote p:first-of-type::before': { content: 'none' },
+            'blockquote p:last-of-type::after':   { content: 'none' },
+            ul: {
+              paddingLeft:  '1.4rem',
+              marginTop:    '1rem',
+              marginBottom: '1rem',
+            },
+            'ul > li': {
+              paddingLeft:  '0.5rem',
+              marginTop:    '0.5rem',
+              marginBottom: '0.5rem',
+            },
+            'ul > li::marker': {
+              color: '#D4A84B',
+            },
+            ol: {
+              paddingLeft:  '1.4rem',
+              marginTop:    '1rem',
+              marginBottom: '1rem',
+            },
+            'ol > li::marker': {
+              color: '#A07830',
+              fontWeight: '600',
+            },
+            a: {
+              color:          '#A07830',
+              textDecoration: 'underline',
+              fontWeight:     '500',
+              '&:hover': { color: '#D4A84B' },
+            },
+            hr: {
+              borderColor: 'rgba(212,168,75,0.25)',
+              marginTop:    '2rem',
+              marginBottom: '2rem',
+            },
+            img: {
+              borderRadius: '0.75rem',
+              marginTop:    '1.5rem',
+              marginBottom: '1.5rem',
+            },
+            code: {
+              color:           '#06101C',
+              backgroundColor: 'rgba(212,168,75,0.12)',
+              borderRadius:    '0.25rem',
+              padding:         '0.15em 0.4em',
+              fontWeight:      '500',
+            },
+            'code::before': { content: 'none' },
+            'code::after':  { content: 'none' },
+          },
+        },
+      },
     },
   },
-  plugins: [],
+  plugins: [typography],
 };

@@ -6,3 +6,10 @@ dist
 .env
 .env.local
 deploy.log
+
+# Secrets / credentials
+*.pem
+*.key
+client_secret_*.json
+*.credentials.json
+service-account*.json

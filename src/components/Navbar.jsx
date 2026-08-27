@@ -1,19 +1,46 @@
 import { useEffect, useRef, useState } from 'react';
+import { TYPE_BY_KEY, CHANNEL_BY_KEY, listingHref } from '../lib/propertyCategories.js';
+import { INQUIRY_FORMS } from '../lib/inquiryForms.js';
 
-const propertyCats = [
-  { href: '#/properties?cat=offmkt', label: 'Off Market Properties' },
-  { href: '#/properties?cat=land',   label: 'Lands' },
-  { href: '#/properties?cat=luxury', label: 'Luxury Properties' },
-  { href: '#/properties?cat=active', label: 'Active Listing' },
-  { href: '#/properties',            label: 'View All' },
-];
+// The menu mirrors how listings are actually filed: what a property is on the
+// top line, how it sells underneath it. Order is its own thing — the specific
+// types first, "View All" last.
+const CHANNEL_KEYS = ['on_market', 'off_market', 'wholesale'];
+
+const propertyCats = ['land', 'luxury', 'dorms', 'all'].map(key => ({
+  key,
+  href: listingHref(key),
+  label: TYPE_BY_KEY[key].navLabel,
+  // Every type carries every channel, so each one can be narrowed in place.
+  channels: CHANNEL_KEYS.map(c => ({
+    key: c,
+    href: listingHref(key, c),
+    label: CHANNEL_BY_KEY[c].pillLabel,
+  })),
+}));
+
+// The same three channels across every type — the pages the site has always
+// published at their own URLs.
+const propertyChannels = CHANNEL_KEYS.map(key => ({
+  key,
+  href: listingHref('all', key),
+  label: CHANNEL_BY_KEY[key].navLabel,
+}));
 
 const links = [
+  { href: '#/',          label: 'Home',         home: true    },
   { href: '#services',   label: 'Services',     anchor: true  },
-  { type: 'dropdown',    label: 'All off Properties', items: propertyCats },
+  { type: 'dropdown',    label: 'All off Properties',
+    items: propertyCats, channels: propertyChannels },
   { href: '#/blogs',     label: 'All Blogs',    anchor: false },
-  { href: '#team',       label: 'Team',         anchor: true  },
 ];
+
+// Back to the top of the landing page, from wherever you are.
+function goHome(e) {
+  e.preventDefault();
+  if (window.location.hash) window.location.hash = '';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
 
 // Navigate to an in-page anchor. If we're on a separate route, go home first then scroll.
 function goToAnchor(e, href) {
@@ -30,7 +57,7 @@ function goToAnchor(e, href) {
   }
 }
 
-export default function Navbar({ currentRoute = 'home' }) {
+export default function Navbar({ currentRoute = 'home', activeHref = null }) {
   const [open, setOpen]         = useState(false);
   const [solid, setSolid]       = useState(false);
   const [dropOpen, setDropOpen] = useState(false);
@@ -74,7 +101,7 @@ export default function Navbar({ currentRoute = 'home' }) {
                     px-5 md:px-[6%] transition-all duration-500
                     ${solid
                       ? 'bg-navy shadow-[0_1px_0_rgba(212,168,75,0.18),0_8px_24px_rgba(0,0,0,0.4)]'
-                      : 'bg-navy/95 backdrop-blur-xl'}`}
+                      : 'bg-navy'}`}
       >
         <span className="absolute inset-x-0 top-0 h-px bg-gradient-to-r
                          from-transparent via-gold/60 to-transparent" />
@@ -91,8 +118,6 @@ export default function Navbar({ currentRoute = 'home' }) {
               className="w-full h-full object-cover scale-110
                          transition-transform duration-700 group-hover:scale-125"
             />
-            <span className="absolute inset-0 bg-gradient-to-tr from-gold/0 to-gold/15
-                             pointer-events-none" />
           </span>
           <div className="leading-tight min-w-0">
             <div className="font-serif text-[0.95rem] sm:text-[1.15rem] md:text-[1.35rem]
@@ -128,37 +153,65 @@ export default function Navbar({ currentRoute = 'home' }) {
                     </svg>
                   </button>
                   {dropOpen && (
-                    <div className="absolute top-full right-0 mt-2 w-[260px] dropdown-enter">
+                    <div className="absolute top-full right-0 mt-2 w-[300px] dropdown-enter">
                       <div className="bg-navy rounded-xl border border-gold/40
                                       shadow-royal overflow-hidden">
                         <div className="h-[2px] bg-gradient-to-r from-transparent via-gold to-transparent" />
                         {l.items.map(i => (
-                          <a key={i.label}
-                             href={i.href}
-                             onClick={close}
-                             className="flex items-center justify-between gap-3
-                                        px-5 py-3.5 text-white text-[0.86rem]
-                                        hover:bg-gold hover:text-navy transition-all
-                                        border-b border-gold/15 last:border-b-0
-                                        group">
-                            <span>{i.label}</span>
-                            <span className="text-gold/60 group-hover:text-navy
-                                             group-hover:translate-x-1 transition-all">→</span>
-                          </a>
+                          <div key={i.key} className="border-b border-gold/15 last:border-b-0">
+                            <a href={i.href}
+                               onClick={close}
+                               className="flex items-center justify-between gap-3
+                                          px-5 pt-3.5 pb-2 text-white text-[0.86rem]
+                                          hover:text-gold transition-colors group">
+                              <span>{i.label}</span>
+                              <span className="text-gold/60 group-hover:text-gold
+                                               group-hover:translate-x-1 transition-all">→</span>
+                            </a>
+                            {/* How each type sells — the second level, in place. */}
+                            <div className="flex flex-wrap gap-x-3 gap-y-1 px-5 pb-3">
+                              {i.channels.map(c => (
+                                <a key={c.key} href={c.href} onClick={close}
+                                   className="text-white/45 hover:text-gold text-[0.74rem]
+                                              transition-colors">
+                                  {c.label}
+                                </a>
+                              ))}
+                            </div>
+                          </div>
                         ))}
+
+                        <div className="bg-navy2 px-5 py-3.5 border-t border-gold/25">
+                          <span className="block text-[0.6rem] font-semibold tracking-[0.2em]
+                                           uppercase text-gold/70 mb-2">
+                            Across every type
+                          </span>
+                          <div className="flex flex-col gap-1.5">
+                            {l.channels.map(c => (
+                              <a key={c.key} href={c.href} onClick={close}
+                                 className="text-white/70 hover:text-gold text-[0.8rem]
+                                            transition-colors">
+                                {c.label}
+                              </a>
+                            ))}
+                          </div>
+                        </div>
                       </div>
                     </div>
                   )}
                 </li>
               );
             }
-            const active =
-              (l.href === '#/blogs' && currentRoute === 'blogs');
+            const active = l.href === activeHref;
             return (
               <li key={l.href}>
                 <a
                   href={l.href}
-                  onClick={l.anchor ? (e) => goToAnchor(e, l.href) : undefined}
+                  onClick={
+                    l.home   ? (e) => { goHome(e); close(); }
+                  : l.anchor ? (e) => goToAnchor(e, l.href)
+                  : undefined
+                  }
                   className={`nav-link text-white/85 hover:text-gold text-[0.86rem] font-medium
                               px-3.5 py-2 rounded-md transition-colors
                               ${active ? 'text-gold active' : ''}`}
@@ -168,21 +221,42 @@ export default function Navbar({ currentRoute = 'home' }) {
               </li>
             );
           })}
-          <li>
-            <a
-              href="#contact"
-              onClick={(e) => goToAnchor(e, '#contact')}
-              className="ml-3 relative inline-flex items-center gap-2
-                         bg-gradient-to-r from-gold to-goldLt text-navy font-semibold text-[0.86rem]
-                         px-6 py-2.5 rounded-md transition-all duration-300
-                         hover:shadow-gold hover:-translate-y-0.5 overflow-hidden group"
-            >
-              <span className="relative z-10">Contact Us</span>
-              <span className="absolute inset-0 -translate-x-full
-                               bg-gradient-to-r from-transparent via-white/40 to-transparent
-                               group-hover:translate-x-full transition-transform duration-700" />
-            </a>
+          <li className="ml-2 pl-3 border-l border-gold/25">
+            <div className="inline-flex items-center gap-2"
+                 title="Brokered by eXp Realty">
+              <span className="text-[0.55rem] tracking-[0.22em] uppercase
+                               text-gold/60 leading-tight text-right">
+                Brokered<br/>by
+              </span>
+              <img
+                src="/assets/exp3.png"
+                alt="eXp Realty"
+                className="h-9 w-9 object-contain rounded-md
+                           ring-1 ring-gold/30 hover:ring-gold/60
+                           transition-all"
+              />
+            </div>
           </li>
+          {/* The two calls to action that replaced "Contact Us" — both in gold,
+              so the choice itself is the most prominent thing in the bar. */}
+          {INQUIRY_FORMS.map((f, i) => (
+            <li key={f.key}>
+              <a
+                href={`#/${f.slug}`}
+                onClick={close}
+                aria-current={activeHref === `#/${f.slug}` ? 'page' : undefined}
+                className={`inline-flex items-center gap-2 font-semibold text-[0.86rem]
+                            px-5 py-2.5 rounded-md transition-all duration-300
+                            border-2 border-gold hover:-translate-y-0.5 hover:shadow-gold
+                            ${i === 0 ? 'ml-3' : 'ml-2'}
+                            ${activeHref === `#/${f.slug}`
+                              ? 'bg-goldLt border-goldLt text-navy'
+                              : 'bg-gold text-navy hover:bg-goldLt hover:border-goldLt'}`}
+              >
+                {f.navLabel}
+              </a>
+            </li>
+          ))}
         </ul>
 
         <button
@@ -225,15 +299,40 @@ export default function Navbar({ currentRoute = 'home' }) {
                     </svg>
                   </button>
                   {mobileDrop && (
-                    <div className="pl-4 pb-3 flex flex-col gap-1">
+                    <div className="pl-4 pb-4 flex flex-col gap-3">
                       {l.items.map(i => (
-                        <a key={i.label}
-                           href={i.href}
-                           onClick={close}
-                           className="text-white/80 hover:text-gold text-base py-2 transition-colors">
-                          · {i.label}
-                        </a>
+                        <div key={i.key}>
+                          <a href={i.href}
+                             onClick={close}
+                             className="block text-white/85 hover:text-gold text-base
+                                        py-1.5 transition-colors">
+                            · {i.label}
+                          </a>
+                          <div className="flex flex-wrap gap-x-4 gap-y-1 pl-4">
+                            {i.channels.map(c => (
+                              <a key={c.key} href={c.href} onClick={close}
+                                 className="text-white/45 hover:text-gold text-sm py-1
+                                            transition-colors">
+                                {c.label}
+                              </a>
+                            ))}
+                          </div>
+                        </div>
                       ))}
+
+                      <div className="pt-3 mt-1 border-t border-white/[0.08]">
+                        <span className="block text-[0.6rem] font-semibold tracking-[0.2em]
+                                         uppercase text-gold/70 mb-2">
+                          Across every type
+                        </span>
+                        {l.channels.map(c => (
+                          <a key={c.key} href={c.href} onClick={close}
+                             className="block text-white/70 hover:text-gold text-[0.95rem]
+                                        py-1.5 transition-colors">
+                            {c.label}
+                          </a>
+                        ))}
+                      </div>
                     </div>
                   )}
                 </div>
@@ -244,7 +343,8 @@ export default function Navbar({ currentRoute = 'home' }) {
                 key={l.href}
                 href={l.href}
                 onClick={(e) => {
-                  if (l.anchor) goToAnchor(e, l.href);
+                  if (l.home) goHome(e);
+                  else if (l.anchor) goToAnchor(e, l.href);
                   close();
                 }}
                 className="block text-white hover:text-gold text-xl font-medium
@@ -254,26 +354,44 @@ export default function Navbar({ currentRoute = 'home' }) {
               </a>
             );
           })}
-          <a
-            href="#contact"
-            onClick={(e) => { goToAnchor(e, '#contact'); close(); }}
-            className="mt-6 bg-gradient-to-r from-gold to-goldLt text-navy font-semibold text-center
-                       px-6 py-4 rounded-xl text-base hover:shadow-gold transition"
-          >
-            Contact Us &rarr;
-          </a>
+          <div className="mt-6 grid gap-3">
+            {INQUIRY_FORMS.map(f => (
+              <a
+                key={f.key}
+                href={`#/${f.slug}`}
+                onClick={close}
+                className="bg-gold hover:bg-goldLt text-navy font-semibold text-center
+                           px-6 py-4 rounded-xl text-base hover:shadow-gold transition"
+              >
+                {f.toggleLabel} &rarr;
+              </a>
+            ))}
+          </div>
 
           <div className="mt-8 pt-6 border-t border-gold/20">
             <p className="text-gold/80 text-xs tracking-[0.18em] uppercase mb-2">
               Reach Steven Directly
             </p>
-            <a href="tel:4695809228" className="block text-white py-1.5">
-              469-580-9228
+            <a href="tel:+14695809228" className="block text-white py-1.5">
+              +1 469-580-9228
             </a>
             <a href="mailto:steven.moning@exprealty.com"
                className="block text-white py-1.5 text-sm">
               steven.moning@exprealty.com
             </a>
+          </div>
+
+          {/* Mobile eXp Realty partnership badge */}
+          <div className="mt-6 pt-6 border-t border-gold/20 flex items-center gap-4">
+            <span className="text-gold/80 text-[0.65rem] tracking-[0.22em] uppercase">
+              Brokered by
+            </span>
+            <img
+              src="/assets/exp3.png"
+              alt="eXp Realty"
+              className="h-12 w-12 object-contain rounded-md
+                         ring-1 ring-gold/40"
+            />
           </div>
         </div>
       </div>

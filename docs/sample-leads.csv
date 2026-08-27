@@ -1,0 +1,10 @@
+Name,Primary Email Address,Cell Phone,Contact Type,Lead Status,Referral Source,Labels,Comments
+Priya Raman,priya.raman@example.com,(469) 555-0142,Buyer,New,Lender referral,"multifamily,value-add",Wants 60-180 units in east Dallas
+Grant Whitfield,grant.whitfield@example.com,(972) 555-0188,Seller,Contacted,Google,"garland,off-market","Owns 72 units in Garland, wants out within six months"
+"Okafor, Raymond",ray.okafor@example.com,469-555-0163,Investor,Qualified,Past client,investor,Surname-first export format
+Dana Cole,,214-555-0119,Buyer & Seller,Working,Open house,1031,Phone only - no email on file
+Pat Nolan,,,Buyer,New,Website,,Row with no email and no phone
+Chris Vance,chris.vance@,(469) 555-0134,Seller,New,Referral,,Row with a broken email address
+Priya Raman,priya.raman@example.com,(469) 555-0142,Buyer,Qualified,Lender referral,"multifamily,value-add,priority",Duplicate of row 1 - this later row wins
+Lena Ortiz,lena.ortiz@example.com,972-555-0155,Buyer,New,Instagram,luxury,"Wants a stabilised asset.
+Prefers Plano or Frisco."

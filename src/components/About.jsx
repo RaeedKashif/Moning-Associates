@@ -54,20 +54,22 @@ export default function About() {
 
         <div className="space-y-4 text-slate text-[0.96rem] leading-[1.85]">
           <p>
-            Steven has worked Dallas–Fort Worth real estate since 2006 — nearly two decades
-            of closings, market cycles, and the kind of insight you only earn the hard way.
-            His <strong className="text-navy">Master's in Information Systems</strong> gives
-            him an edge most agents simply don't have: he reads the data first, then makes
-            the call.
+            Steven has been working Dallas–Fort Worth real estate since 2006. That's
+            almost two decades of closings, market shifts, and the kind of street
+            knowledge you can't fake. His <strong className="text-navy">Master's in
+            Information Systems</strong> gives him an angle most agents simply don't
+            have — he reads the data first, then makes the call.
           </p>
           <p>
-            From REO portfolios to luxury listings to a first-time buyer's starter home,
-            Steven has built a reputation that outlasts any single deal. Clients come back.
-            They send their friends. That's the whole game.
+            REO portfolios. Luxury listings. A first-time buyer's starter home. The
+            mix is wide on purpose, but the standard never changes. Clients keep
+            coming back, and they bring their friends with them. That's really the
+            whole game.
           </p>
           <p>
-            As CEO of Moning &amp; Associates, he leads a small, focused team built around
-            one rule: every client gets their best outcome, every time.
+            As CEO of Moning &amp; Associates, he runs a small, focused team built
+            around one rule: every client walks away better off than when they
+            started. Every time.
           </p>
         </div>
 
@@ -91,8 +93,8 @@ export default function About() {
           ))}
         </div>
 
-        <a href="tel:4695809228" className="btn-outline-navy mt-8">
-          Call 469-580-9228
+        <a href="tel:+14695809228" className="btn-outline-navy mt-8">
+          Call +1 469-580-9228
           <span className="w-5 h-5 rounded-full bg-gold/15 grid place-items-center
                            text-xs">&rarr;</span>
         </a>
