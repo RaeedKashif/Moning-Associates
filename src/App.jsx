@@ -135,7 +135,7 @@ export default function App() {
 
   // Scroll reveal observer — re-arm whenever route changes
   useEffect(() => {
-    const els = document.querySelectorAll('.reveal, .reveal-left, .reveal-scale');
+    const SELECTOR = '.reveal, .reveal-left, .reveal-scale';
     const io = new IntersectionObserver(
       entries => entries.forEach(e => {
         if (e.isIntersecting) {
@@ -149,8 +149,25 @@ export default function App() {
       // never fits, and the whole form sat at opacity 0 until you scrolled.
       { threshold: 0, rootMargin: '0px 0px -80px 0px' }
     );
-    els.forEach(el => io.observe(el));
-    return () => io.disconnect();
+
+    // Observing the same element twice is a no-op, so re-walking a subtree is safe.
+    const observe = node => {
+      if (node.nodeType !== 1) return;
+      if (node.matches(SELECTOR)) io.observe(node);
+      node.querySelectorAll(SELECTOR).forEach(el => io.observe(el));
+    };
+
+    observe(document.body);
+
+    // Cards that arrive with their data — testimonials, listings, blog posts —
+    // mount after this effect has already run. A one-shot query would never see
+    // them, and they would sit at opacity 0 for good, so watch for them instead.
+    const mo = new MutationObserver(records =>
+      records.forEach(r => r.addedNodes.forEach(observe))
+    );
+    mo.observe(document.body, { childList: true, subtree: true });
+
+    return () => { io.disconnect(); mo.disconnect(); };
   }, [route.name]);
 
   return (
