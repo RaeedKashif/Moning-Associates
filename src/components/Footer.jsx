@@ -14,6 +14,17 @@ const legal = [
   { href: '/terms',   label: 'Terms and Conditions' },
 ];
 
+// TREC's own forms page rather than the versioned PDF (CN 1-5_0.pdf): the
+// filename changes each time TREC revises the notice, but this page always
+// points at the current one. The IABS link joins this once we have Steven's
+// actual completed form; a blank template doesn't belong here.
+const trecLinks = [
+  {
+    href: 'https://www.trec.texas.gov/forms/consumer-protection-notice',
+    label: 'Texas Real Estate Commission Consumer Protection Notice',
+  },
+];
+
 const socials = [
   { label: 'f',  title: 'Facebook' },
   { label: 'ig', title: 'Instagram' },
@@ -155,6 +166,18 @@ export default function Footer() {
           deemed reliable but is not guaranteed and should be independently
           verified.
         </p>
+        {/* Spelled out in full — TREC asks that this not be reduced to an
+            acronym, and a consumer should be able to tell what they're
+            clicking before they click it. */}
+        <div className="mt-4 pt-4 border-t border-gold/15 flex flex-wrap gap-x-6 gap-y-2">
+          {trecLinks.map(l => (
+            <a key={l.href} href={l.href} target="_blank" rel="noreferrer"
+               className="text-gold/90 hover:text-gold text-[0.8rem] font-medium
+                          underline underline-offset-4 transition-colors">
+              {l.label}
+            </a>
+          ))}
+        </div>
       </div>
 
       <div className="flex flex-col md:flex-row justify-between items-start
@@ -167,6 +190,12 @@ export default function Footer() {
                         md:justify-end">
           {legal.map(l => (
             <a key={l.href} href={l.href}
+               className="text-white/45 hover:text-gold text-[0.78rem] transition-colors">
+              {l.label}
+            </a>
+          ))}
+          {trecLinks.map(l => (
+            <a key={l.href} href={l.href} target="_blank" rel="noreferrer"
                className="text-white/45 hover:text-gold text-[0.78rem] transition-colors">
               {l.label}
             </a>
