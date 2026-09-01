@@ -43,11 +43,15 @@ export default function InquiryPage({ config }) {
 
       <section className="relative bg-navy2 px-5 md:px-[6%] pb-20 pt-14
                           border-t border-gold/15
-                          grid lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1fr)]
+                          grid grid-cols-1 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1fr)]
                           gap-10 lg:gap-16 items-start">
         {/* Left: what to expect. Sticky, because the intake is long enough that
-            you would otherwise scroll past this in the first second. */}
-        <div className="reveal lg:sticky lg:top-24">
+            you would otherwise scroll past this in the first second.
+            min-w-0 stops a grid item from refusing to shrink below its
+            content's natural width — without it, one long unbroken string
+            anywhere inside (a role label, an email link) silently widens this
+            whole column past the phone viewport instead of wrapping. */}
+        <div className="reveal lg:sticky lg:top-24 min-w-0">
           <h2 className="font-serif text-white text-[clamp(1.4rem,2.6vw,2rem)]
                          font-semibold mb-6">
             {reassurance.heading}
@@ -88,7 +92,7 @@ export default function InquiryPage({ config }) {
         </div>
 
         {/* Right: the form */}
-        <div className="reveal d2">
+        <div className="reveal d2 min-w-0">
           <InquiryForm config={config} />
         </div>
       </section>

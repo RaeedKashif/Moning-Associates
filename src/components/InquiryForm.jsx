@@ -281,7 +281,7 @@ export default function InquiryForm({ config }) {
       )}
 
       {sections.map((section, i) => (
-        <fieldset key={section.heading} className={i ? 'mt-10' : ''}>
+        <fieldset key={section.heading} className={`min-w-0 ${i ? 'mt-10' : ''}`}>
           {/* Where the other side's questions start, so the form does not just
               silently double in length under you. */}
           {section.side && !sections[i - 1]?.side && (
@@ -302,7 +302,7 @@ export default function InquiryForm({ config }) {
                 {String(i + 1).padStart(2, '0')}
               </span>
               <span className="text-[0.7rem] font-semibold tracking-[0.24em]
-                               uppercase text-gold whitespace-nowrap">
+                               uppercase text-gold min-w-0">
                 {section.heading}
               </span>
               <span className="h-px flex-1 bg-gold/20" />
@@ -315,7 +315,7 @@ export default function InquiryForm({ config }) {
             </p>
           )}
 
-          <div className="grid sm:grid-cols-2 gap-x-5 gap-y-5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-5 gap-y-5">
             {section.fields.map(f => (
               <Field
                 key={f.name}
@@ -397,7 +397,7 @@ function Field({ field, value, error, onChange }) {
   const labelBase = 'text-[0.82rem] font-medium text-white/70 leading-snug mb-2';
 
   return (
-    <div className={`flex flex-col ${half ? '' : 'sm:col-span-2'}`}>
+    <div className={`flex flex-col min-w-0 ${half ? '' : 'sm:col-span-2'}`}>
       {field.type === 'radio' ? (
         <RadioGroup field={field} value={value} error={error} errorId={errorId}
                     onChange={onChange} labelClass={`block ${labelBase}`} label={label} />
@@ -483,7 +483,7 @@ function TextInput({ field, id, value, error, errorId, onChange }) {
 // two-column layout without eight rows of stacked circles.
 function RadioGroup({ field, value, error, errorId, onChange, labelClass, label }) {
   return (
-    <fieldset aria-describedby={error ? errorId : undefined}>
+    <fieldset className="min-w-0" aria-describedby={error ? errorId : undefined}>
       <legend className={labelClass}>{label}</legend>
       <div className="flex flex-wrap gap-2.5" id={`f-${field.name}`} tabIndex={-1}>
         {field.options.map(o => {
