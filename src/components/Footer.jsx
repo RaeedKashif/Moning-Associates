@@ -125,6 +125,15 @@ export default function Footer() {
               All licensed real estate brokerage services are provided through
               eXp Realty.
             </div>
+            {/* Verified against Steven's own signature block and eXp's TX
+                Broker Team reply (Aug 2026) — brokerage name and both TREC
+                license numbers, not invented. eXp's office address/phone were
+                not part of that thread, so they stay out until confirmed. */}
+            <div className="text-white/40 text-[0.72rem] mt-2 leading-[1.7]">
+              eXp Realty LLC &middot; TREC Broker Lic. #603392<br/>
+              Steven Moning &middot; TREC Sales Agent Lic. #0530915<br/>
+              Managing Broker: Karen Richards
+            </div>
           </div>
         </div>
         <div className="text-white/35 text-[0.72rem] italic max-w-sm md:text-right shrink-0">
