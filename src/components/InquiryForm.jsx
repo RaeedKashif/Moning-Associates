@@ -86,6 +86,14 @@ function composeMessage(sections, values, uploads) {
         continue;
       }
 
+      // Always recorded, both ways round. A declined opt-in is the half that
+      // actually matters later — it is the evidence that no consent was given,
+      // so it cannot be the case that silence just drops out of the record.
+      if (f.type === 'consent') {
+        lines.push(`SMS consent: ${values[f.name] === true ? 'YES — opted in' : 'NO — not given'}`);
+        continue;
+      }
+
       const value = (values[f.name] ?? '').toString().trim();
       if (!value) continue;
 
@@ -371,8 +379,61 @@ export default function InquiryForm({ config }) {
             Terms and Conditions
           </a>.
         </p>
+
+        {/* Second half of the carrier requirement: the checkbox above is the
+            opt-in, this states the terms in the page itself so they are visible
+            without ticking anything. */}
+        <p className="text-white/30 text-[0.7rem] text-center mt-3
+                      leading-[1.75] max-w-2xl mx-auto">
+          By providing a telephone number and submitting this form, you consent to
+          receive SMS text messages from Moning &amp; Associates and agree to our{' '}
+          <a href="/privacy" className="text-white/45 hover:text-gold underline underline-offset-2 transition-colors">
+            Privacy Policy
+          </a>. Message frequency may vary. Message and data rates may apply.
+          Reply STOP to opt out of further messaging. Reply HELP for more
+          information.
+        </p>
       </div>
     </form>
+  );
+}
+
+// The link pair that appears in both consent notices.
+const PolicyLinks = ({ className = 'text-white/70 hover:text-gold underline underline-offset-2 transition-colors' }) => (
+  <>
+    <a href="/privacy" className={className}>Privacy Policy</a>
+    {' '}and{' '}
+    <a href="/terms" className={className}>Terms and Conditions</a>
+  </>
+);
+
+// Carrier-registered opt-in wording. Rendered rather than stored with the field
+// data so the text cannot drift out of sync with what was registered, and so
+// the policy links stay real links rather than escaped markup.
+function ConsentCheckbox({ field, value, onChange }) {
+  const id = `f-${field.name}`;
+  return (
+    <label htmlFor={id} className="flex gap-3 items-start cursor-pointer
+                                   rounded-xl border border-gold/20 bg-white/[0.02]
+                                   px-4 py-3.5">
+      <input
+        id={id}
+        name={field.name}
+        type="checkbox"
+        // Defaults to false on every render — this must never arrive pre-ticked.
+        checked={value === true}
+        onChange={e => onChange(e.target.checked)}
+        className="mt-0.5 w-4 h-4 shrink-0 accent-gold cursor-pointer"
+      />
+      <span className="text-white/55 text-[0.78rem] leading-[1.75]">
+        I agree to receive SMS text messages from Moning &amp; Associates regarding
+        my inquiry, submitted properties, available properties, appointments, and
+        related real estate services. Message frequency may vary. Message and data
+        rates may apply. Reply STOP to opt out or HELP for assistance. Consent is
+        not a condition of purchasing any property or service. See our{' '}
+        <PolicyLinks />.
+      </span>
+    </label>
   );
 }
 
@@ -395,6 +456,14 @@ function Field({ field, value, error, onChange }) {
   // label always hugs its own input and the slack from a taller neighbour falls
   // above it rather than between the two.
   const labelBase = 'text-[0.82rem] font-medium text-white/70 leading-snug mb-2';
+
+  if (field.type === 'consent') {
+    return (
+      <div className="flex flex-col min-w-0 sm:col-span-2">
+        <ConsentCheckbox field={field} value={value} onChange={onChange} />
+      </div>
+    );
+  }
 
   return (
     <div className={`flex flex-col min-w-0 ${half ? '' : 'sm:col-span-2'}`}>

@@ -26,6 +26,12 @@ function contactSection(role) {
         placeholder: 'john@email.com', autoComplete: 'email', half: true },
       { name: 'phone', label: 'Phone', type: 'tel', required: true,
         placeholder: '(469) 555-0123', autoComplete: 'tel', half: true },
+      // Carrier 10DLC consent. Sits directly under the phone field, starts
+      // unchecked, and is never required — a phone number is needed to answer
+      // the enquiry at all, so someone must be able to give one without also
+      // opting into marketing texts. The wording is fixed by the carrier
+      // registration and lives in the renderer, not here.
+      { name: 'sms_consent', type: 'consent' },
       { name: 'heard_about', label: 'How did you hear about us', type: 'text',
         placeholder: 'Referral, LinkedIn, a past deal…' },
       { name: 'i_am_a', label: 'I am a', type: 'radio', required: true,
