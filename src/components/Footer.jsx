@@ -14,13 +14,18 @@ const legal = [
   { href: '/terms',   label: 'Terms and Conditions' },
 ];
 
-// TREC's own forms page rather than the versioned PDF (CN 1-5_0.pdf): the
-// filename changes each time TREC revises the notice, but this page always
-// points at the current one. The IABS link joins this once we have Steven's
-// actual completed form; a blank template doesn't belong here.
+// Both served from our own domain rather than linked off-site: a required
+// disclosure should not be one expired share link or one external outage away
+// from being unreachable. The IABS is Steven's completed form (TXR 2501, dated
+// 11-03-2025) and the notice is TREC's own CN 1-5. If TREC revises CN 1-5, or
+// Steven's IABS is reissued, replace the file in public/legal/.
 const trecLinks = [
   {
-    href: 'https://www.trec.texas.gov/forms/consumer-protection-notice',
+    href: '/legal/information-about-brokerage-services.pdf',
+    label: 'Texas Real Estate Commission Information About Brokerage Services',
+  },
+  {
+    href: '/legal/trec-consumer-protection-notice.pdf',
     label: 'Texas Real Estate Commission Consumer Protection Notice',
   },
 ];
@@ -136,14 +141,18 @@ export default function Footer() {
               All licensed real estate brokerage services are provided through
               eXp Realty.
             </div>
-            {/* Verified against Steven's own signature block and eXp's TX
-                Broker Team reply (Aug 2026) — brokerage name and both TREC
-                license numbers, not invented. eXp's office address/phone were
-                not part of that thread, so they stay out until confirmed. */}
+            {/* Every line here is taken from Steven's completed IABS (TXR
+                2501) and eXp's TX Broker Team correspondence — nothing is
+                inferred. Karen Richards is both the designated broker and the
+                supervising broker on that form, which is why she appears once. */}
             <div className="text-white/40 text-[0.72rem] mt-2 leading-[1.7]">
               eXp Realty LLC &middot; TREC Broker Lic. #603392<br/>
-              Steven Moning &middot; TREC Sales Agent Lic. #0530915<br/>
-              Managing Broker: Karen Richards
+              North Texas Office &middot; 5605 N MacArthur Blvd, Irving, TX 75038<br/>
+              <a href="tel:+18885197431" className="hover:text-gold transition-colors">
+                (888) 519-7431
+              </a><br/>
+              Designated &amp; Supervising Broker: Karen Richards &middot; Lic. #508111<br/>
+              Steven Moning &middot; TREC Sales Agent Lic. #0530915
             </div>
           </div>
         </div>
